@@ -83,7 +83,8 @@ function mainRaf(time) {
     if (meetVisual) {
       const mr = meetVisual.getBoundingClientRect();
       if (mr.bottom > -60 && mr.top < innerHeight + 60) {
-        const raw = clamp01((innerHeight * 0.92 - mr.top) / (innerHeight * 0.7));
+        // 0 = vizuál vjíždí zespodu, 1 = vizuál uprostřed obrazovky (dotyk)
+        const raw = clamp01((innerHeight * 0.95 - mr.top) / (innerHeight * 0.62));
         meetP += (raw - meetP) * 0.07;
       }
     }
@@ -506,26 +507,109 @@ if (heroCanvas) asciiRender(heroCanvas, (x, y, t) => {
   return v * (0.55 + 0.45 * noise(x, y, t));
 }, true);
 
-/* průsečík: digitální lalok zleva, "lidský" zprava — ruce se k sobě
-   natahují podle scrollu (meetP) a v místě dotyku přeskočí jiskra */
+/* průsečík: ASCII ruka AI zleva se scrollem natahuje k lidské ruce zprava
+   (jemný halftone, fotografický ráz) — Michelangelo kompozice jako předloha.
+   Nad rukama pluje čtyřcípá hvězda, při dotyku přeskočí jiskra. */
 const meetCanvas = document.getElementById("asciiMeet");
-if (meetCanvas) asciiRender(meetCanvas, (x, y, t) => {
-  const wob = 0.012 * Math.sin(t + y * 5);
-  const reach = 0.16 * meetP; // prsty se natahují ke středu
-  let v = 0;
-  v = Math.max(v, lobe(x, y, 0.16, 0.42 + wob, 0.26, 0.34));
-  v = Math.max(v, lobe(x, y, 0.26 + reach, 0.52 + wob, 0.10, 0.06));
-  v = Math.max(v, lobe(x, y, 0.86, 0.55 - wob, 0.26, 0.36));
-  v = Math.max(v, lobe(x, y, 0.74 - reach, 0.50 - wob, 0.10, 0.06));
-  // jiskra při dotyku: rozsvítí se až těsně před spojením a tepe
-  const spark = clamp01((meetP - 0.8) / 0.2) * (0.55 + 0.45 * Math.sin(t * 7));
-  if (spark > 0.02) {
-    v = Math.max(v, spark * lobe(x, y, 0.5, 0.51, 0.06 + 0.05 * spark, 0.04 + 0.04 * spark));
+if (meetCanvas) {
+  const mctx = meetCanvas.getContext("2d");
+  const MW = meetCanvas.width, MH = meetCanvas.height;
+  const ASP = MW / MH; // souřadnice: X v [0, ASP], y v [0,1] — vzdálenosti izotropní
+  const mcell = 8, dcell = 4;
+  const mcols = Math.floor(MW / mcell), mrows = Math.floor(MH / (mcell * 1.15));
+  const dcols = Math.floor(MW / dcell), drows = Math.floor(MH / dcell);
+  const matlas = getGlyphAtlas(mcell);
+
+  // hustota kapsle (úsečka s poloměrem) — z nich se skládají dlaně a prsty
+  function cap(X, y, x1, y1, x2, y2, r) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const len2 = dx * dx + dy * dy || 1e-6;
+    let t = ((X - x1) * dx + (y - y1) * dy) / len2;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    const px = x1 + t * dx - X, py = y1 + t * dy - y;
+    const d2 = (px * px + py * py) / (r * r);
+    return d2 >= 1 ? 0 : 1 - d2;
   }
-  // pravá strana hladší (lidská), levá zrnitější (digitální)
-  const grain = x < 0.5 ? noise(x, y, t) : 0.85;
-  return v * (0.5 + 0.5 * grain);
-}, true);
+  // čtyřcípá hvězda (astroida) — sparkle jako v předloze
+  function star4(X, y, cx, cy, s) {
+    const dx = Math.abs(X - cx) / s, dy = Math.abs(y - cy) / s;
+    const r = Math.pow(Math.sqrt(dx) + Math.sqrt(dy), 2);
+    return r >= 1 ? 0 : 1 - r;
+  }
+
+  function aiHand(X, y, t) {
+    X -= 0.12 * meetP; // celá paže se přisouvá ke středu
+    const w = 0.008 * Math.sin(t * 1.1 + y * 9); // digitální chvění
+    let v = cap(X, y, -0.25, 0.72 + w, 0.72, 0.60 + w, 0.105);     // předloktí
+    v = Math.max(v, cap(X, y, 0.72, 0.585, 0.95, 0.55, 0.10));     // dlaň
+    v = Math.max(v, cap(X, y, 0.98, 0.525, 1.30 + 0.06 * meetP, 0.497, 0.029)); // ukazovák
+    v = Math.max(v, cap(X, y, 1.00, 0.567, 1.22, 0.568, 0.026));   // prostředník
+    v = Math.max(v, cap(X, y, 0.985, 0.615, 1.16, 0.628, 0.024));  // prsteník
+    v = Math.max(v, cap(X, y, 0.96, 0.66, 1.09, 0.677, 0.019));    // malík
+    v = Math.max(v, cap(X, y, 0.85, 0.50, 0.99, 0.42, 0.026));     // palec
+    return v;
+  }
+  function humanHand(X, y) {
+    X += 0.22 * meetP; // lidská ruka vychází vstříc
+    let v = cap(X, y, ASP + 0.25, 0.80, 2.48, 0.615, 0.105);        // předloktí
+    v = Math.max(v, cap(X, y, 2.48, 0.59, 2.24, 0.525, 0.10));      // dlaň
+    v = Math.max(v, cap(X, y, 2.18, 0.492, 1.86 - 0.06 * meetP, 0.512, 0.027)); // ukazovák
+    v = Math.max(v, cap(X, y, 2.20, 0.545, 1.97, 0.60, 0.025));     // prostředník
+    v = Math.max(v, cap(X, y, 2.22, 0.588, 2.02, 0.665, 0.023));    // prsteník
+    v = Math.max(v, cap(X, y, 2.25, 0.628, 2.10, 0.71, 0.018));     // malík
+    v = Math.max(v, cap(X, y, 2.30, 0.455, 2.13, 0.375, 0.025));    // palec
+    return v;
+  }
+
+  function meetFrame(t) {
+    mctx.clearRect(0, 0, MW, MH);
+    const sparkA = clamp01((meetP - 0.82) / 0.18);
+    // A) ASCII vrstva: AI ruka + hvězda + jiskra dotyku
+    for (let r = 0; r < mrows; r++) {
+      for (let c = 0; c < mcols; c++) {
+        const X = ((c + 0.5) / mcols) * ASP, y = (r + 0.5) / mrows;
+        if (X > 1.9) continue;
+        let v = Math.min(1, aiHand(X, y, t) * 1.35) * (0.62 + 0.38 * noise(X, y, t));
+        const st = star4(X, y, 1.42, 0.22, 0.15 + 0.015 * Math.sin(t * 1.4)) * (0.75 + 0.25 * Math.sin(t * 2.2));
+        v = Math.max(v, st);
+        if (sparkA > 0.02) {
+          const sp = star4(X, y, 1.53, 0.503, 0.06 + 0.06 * sparkA) * sparkA * (0.65 + 0.35 * Math.sin(t * 8));
+          v = Math.max(v, sp);
+        }
+        if (v <= 0.04) continue;
+        v = Math.min(1, v);
+        const idx = Math.floor(v * CHARS);
+        if (idx < 1) continue;
+        const s = Math.min(SHADES - 1, Math.floor(v * SHADES));
+        mctx.drawImage(matlas.cv, (idx - 1) * matlas.cw, s * matlas.ch, matlas.cw, matlas.ch,
+          c * mcell - 1, r * mcell * 1.15 - 1, matlas.cw, matlas.ch);
+      }
+    }
+    // B) halftone vrstva: lidská ruka z jemných teček (bez šumu, hladká)
+    for (let r = 0; r < drows; r++) {
+      for (let c = 0; c < dcols; c++) {
+        const X = ((c + 0.5) / dcols) * ASP, y = (r + 0.5) / drows;
+        if (X < 1.35) continue;
+        const v = humanHand(X, y);
+        if (v <= 0.03) continue;
+        const shade = 96 + Math.floor((1 - v) * 88);
+        mctx.fillStyle = `rgb(${shade},${shade},${shade})`;
+        const s = 0.8 + Math.pow(v, 0.6) * 2.3;
+        mctx.fillRect(c * dcell + (dcell - s) / 2, r * dcell + (dcell - s) / 2, s, s);
+      }
+    }
+  }
+
+  let mraf, mlast = 0;
+  const mloop = (ms) => {
+    if (ms - mlast >= 31) { mlast = ms; meetFrame(ms / 1000); } // ~30 fps
+    mraf = requestAnimationFrame(mloop);
+  };
+  new IntersectionObserver(([en]) => {
+    if (en.isIntersecting) mraf = requestAnimationFrame(mloop);
+    else cancelAnimationFrame(mraf);
+  }).observe(meetCanvas);
+}
 
 /* footer: vztyčená paže s pochodní (statická silueta) */
 const footCanvas = document.getElementById("asciiFoot");
