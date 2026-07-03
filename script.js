@@ -194,7 +194,9 @@ if (finePointer && !reduceMotion) {
 }
 
 /* ---------- blur+fade reveal (se staggerem mezi sourozenci) ---------- */
-const reveals = document.querySelectorAll(".reveal");
+/* sledují se i .split nadpisy bez vlastního .reveal (FAQ, CTA) — jinak by
+   jejich slova zůstala navždy schovaná pod maskou */
+const reveals = document.querySelectorAll(".reveal, main h3.split:not(.reveal)");
 // stagger: pořadí v rámci rodiče -> --i
 document.querySelectorAll(".feature-grid, .case-grid, .faq-list, .tag-strip").forEach((parent) => {
   [...parent.children].forEach((child, i) => child.style.setProperty("--i", i));
