@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Případové studie — Branzly</title>
+  <meta name="description" content="Detailní případové studie nasazení AI agentů a datových pipeline: Simplifio Digital, Koruna Bank a Velomo." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='8' height='18' rx='4'/%3E%3Crect x='13' y='3' width='8' height='18' rx='4'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="fonts/fonts.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .studies { max-width: 780px; margin: 0 auto; padding: clamp(48px, 7vw, 80px) 32px clamp(64px, 9vw, 110px); }
+    .studies-head h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(36px, 5.4vw, 50px); line-height: 1.1; }
+    .studies-head p { color: var(--gray-2); font-size: 13.5px; margin-top: 14px; max-width: 520px; }
+    .study { margin-top: clamp(48px, 7vw, 72px); padding-top: clamp(40px, 6vw, 56px); border-top: 1px solid var(--line); scroll-margin-top: 90px; }
+    .study-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .study h2 { display: flex; align-items: center; gap: 12px; font-weight: 400; font-size: clamp(26px, 3.6vw, 34px); line-height: 1.15; }
+    .study .lead { color: var(--gray-1); font-size: 15px; line-height: 1.65; margin-top: 14px; }
+    .study h3 { font-size: 15px; font-weight: 500; text-align: left; margin: 28px 0 8px; }
+    .study p { color: var(--gray-2); font-size: 13.5px; margin-bottom: 8px; }
+    .study ul { margin: 8px 0 8px 18px; display: grid; gap: 5px; }
+    .study li { color: var(--gray-2); font-size: 13.5px; }
+    .study-stats { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px dashed var(--line-strong); background: var(--panel); margin-top: 28px; }
+    .study-stat { padding: 22px 16px; text-align: center; }
+    .study-stat + .study-stat { border-left: 1px dashed var(--line-strong); }
+    .study-stat b { display: block; font-family: var(--serif); font-weight: 400; font-size: clamp(24px, 3vw, 32px); line-height: 1.1; }
+    .study-stat span { display: block; font-size: 11.5px; color: var(--gray-3); margin-top: 6px; }
+    .study-quote { border-left: 2px solid var(--ink); padding: 4px 0 4px 18px; margin-top: 26px; }
+    .study-quote p { color: var(--gray-1); font-size: 13.5px; font-style: italic; }
+    .study-quote footer { font-size: 12px; color: var(--gray-3); margin-top: 6px; font-style: normal; }
+    .studies-cta { margin-top: clamp(52px, 8vw, 76px); padding: 34px; border: 1px dashed var(--line-strong); background: var(--panel); text-align: center; }
+    .studies-cta p { color: var(--gray-2); font-size: 13.5px; margin-bottom: 18px; }
+    @media (max-width: 700px) {
+      .study-stats { grid-template-columns: 1fr; }
+      .study-stat + .study-stat { border-left: 0; border-top: 1px dashed var(--line-strong); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav-wrap">
+    <div class="nav nav-simple frame">
+      <nav class="nav-side nav-left" aria-label="Navigace">
+        <a href="index.html"><span>[</span>Zpět na web<span>]</span></a>
+      </nav>
+      <a href="index.html" class="brand" aria-label="Branzly domů">
+        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+          <rect x="3" y="3" width="8" height="18" rx="4" fill="#000"/>
+          <rect x="13" y="3" width="8" height="18" rx="4" fill="#000"/>
+        </svg>
+      </a>
+      <nav class="nav-side nav-right" aria-label="Kontakt">
+        <a href="index.html#kontakt"><span>[</span>Kontakt<span>]</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="frame">
+    <div class="studies">
+      <div class="studies-head">
+        <h1>Případové studie</h1>
+        <p>Tři nasazení, tři různé obory, jeden princip: automatizace postavená na infrastruktuře, ne na marketingových slidech. Všechna čísla jsou provozní metriky po předání systému.</p>
+      </div>
+
+      <!-- ===== SIMPLIFIO ===== -->
+      <article class="study" id="simplifio">
+        <div class="study-tags">
+          <span class="chip-gray">Logistika</span>
+          <span class="chip-gray">Datové pipeline</span>
+          <span class="chip-gray">Nasazení: 6 týdnů</span>
+        </div>
+        <h2><i class="case-mark cm-1"></i>Simplifio Digital</h2>
+        <p class="lead">Globální logistická firma zpracovávala mezinárodní fakturaci ručně: tým čtyř lidí přepisoval údaje mezi TMS systémem, celní databází a účetnictvím. Každá zásilka čekala na papírování — v průměru 48 hodin.</p>
+
+        <h3>Výchozí stav</h3>
+        <ul>
+          <li>4 pracovníci na plný úvazek jen na přepis dat mezi třemi systémy</li>
+          <li>Chybovost ručního přepisu ~3 % — každá chyba znamenala zdržení na celnici</li>
+          <li>Fakturace limitovala růst: víc zásilek = víc lidí</li>
+        </ul>
+
+        <h3>Řešení</h3>
+        <p>Postavili jsme event-driven orchestraci přes vlastní middleware: každá událost v TMS (naložení, přechod hranice, doručení) automaticky spouští validaci dat, vygenerování celních dokumentů a zaúčtování. Lidé řeší jen výjimky, které pipeline označí k ruční kontrole.</p>
+        <ul>
+          <li>Napojení na stávající TMS a účetní systém přes API, bez výměny softwaru</li>
+          <li>Validační vrstva s pravidly pro 14 zemí</li>
+          <li>Dashboard výjimek — tým vidí jen případy vyžadující rozhodnutí</li>
+        </ul>
+
+        <h3>Výsledek</h3>
+        <div class="study-stats">
+          <div class="study-stat"><b>48 h → 11 min</b><span>doba zpracování zásilky</span></div>
+          <div class="study-stat"><b>−97 %</b><span>chybovost dokumentace</span></div>
+          <div class="study-stat"><b>3,2 měsíce</b><span>návratnost investice</span></div>
+        </div>
+
+        <blockquote class="study-quote">
+          <p>„Autonomní pipeline kompletně proměnila naši jednotkovou ekonomiku. Škálujeme průchodnost bez navyšování provozního týmu."</p>
+          <footer>Kateřina Machová — provozní ředitelka, Simplifio Digital</footer>
+        </blockquote>
+      </article>
+
+      <!-- ===== KORUNA BANK ===== -->
+      <article class="study" id="koruna">
+        <div class="study-tags">
+          <span class="chip-gray">Bankovnictví</span>
+          <span class="chip-gray">AI agent</span>
+          <span class="chip-gray">Nasazení: 8 týdnů</span>
+        </div>
+        <h2><i class="case-mark cm-2"></i>Koruna Bank</h2>
+        <p class="lead">Interní helpdesk banky dostával přes 900 dotazů denně — od resetů hesel po výklad interních směrnic. Odpovědi hledalo 12 operátorů v dokumentaci čítající tisíce stran. Veřejné AI nástroje byly kvůli regulaci nepoužitelné.</p>
+
+        <h3>Výchozí stav</h3>
+        <ul>
+          <li>Průměrná doba odpovědi 4,5 hodiny, špičky přes den</li>
+          <li>Přísné požadavky: žádná data nesmí opustit infrastrukturu banky</li>
+          <li>Znalosti roztříštěné v directivách, wiki a e-mailových vláknech</li>
+        </ul>
+
+        <h3>Řešení</h3>
+        <p>Nasadili jsme stavového konverzačního agenta na RAG architektuře běžící kompletně v privátním cloudu banky. Agent je vytrénovaný výhradně na interní dokumentaci, odpovědi dokládá citacemi zdrojů a složité případy předává lidem s celým kontextem konverzace.</p>
+        <ul>
+          <li>Privátní vektorová databáze, API bez retence dat</li>
+          <li>Každá odpověď s odkazem na zdrojovou směrnici — auditovatelnost</li>
+          <li>Eskalační protokol: nejistota → předání operátorovi, nikdy odhad</li>
+        </ul>
+
+        <h3>Výsledek</h3>
+        <div class="study-stats">
+          <div class="study-stat"><b>78 %</b><span>dotazů vyřešeno bez operátora</span></div>
+          <div class="study-stat"><b>4,5 h → 40 s</b><span>medián doby odpovědi</span></div>
+          <div class="study-stat"><b>0</b><span>incidentů úniku dat</span></div>
+        </div>
+
+        <blockquote class="study-quote">
+          <p>„První AI nasazení, které prošlo naším compliance na první pokus. Agent odpovídá rychleji než my — a vždycky s citací."</p>
+          <footer>Tomáš Zbořil — VP pro engineering, Koruna Bank</footer>
+        </blockquote>
+      </article>
+
+      <!-- ===== VELOMO ===== -->
+      <article class="study" id="velomo">
+        <div class="study-tags">
+          <span class="chip-gray">SaaS</span>
+          <span class="chip-gray">Prediktivní middleware</span>
+          <span class="chip-gray">Nasazení: 5 týdnů</span>
+        </div>
+        <h2><i class="case-mark cm-3"></i>Velomo</h2>
+        <p class="lead">SaaS platforma pro správu vozových parků ztrácela zákazníky potichu: když klient přestal produkt používat, tým se to dozvěděl až z výpovědi. Customer success reagoval pozdě a plošně.</p>
+
+        <h3>Výchozí stav</h3>
+        <ul>
+          <li>Měsíční churn 4,1 % a rostl s velikostí zákaznické báze</li>
+          <li>Signály odchodu ležely v telemetrii, kterou nikdo nevyhodnocoval</li>
+          <li>Customer success obvolával zákazníky naslepo</li>
+        </ul>
+
+        <h3>Řešení</h3>
+        <p>Prediktivní AI middleware čte telemetrii produktu v reálném čase, skóruje riziko odchodu každého účtu a sám spouští odstupňované zásahy: od personalizovaného onboarding e-mailu po úkol pro account manažera s přesným popisem, co se u klienta děje.</p>
+        <ul>
+          <li>Napojení na produktovou telemetrii, CRM a e-mailing přes API</li>
+          <li>Model rizika přetrénovávaný každý týden na čerstvých datech</li>
+          <li>Zásahy eskalují podle skóre — automatika řeší lehké případy, lidé kritické</li>
+        </ul>
+
+        <h3>Výsledek</h3>
+        <div class="study-stats">
+          <div class="study-stat"><b>−31 %</b><span>odchodovost zákazníků za kvartál</span></div>
+          <div class="study-stat"><b>9 dní</b><span>průměrný předstih detekce rizika</span></div>
+          <div class="study-stat"><b>5×</b><span>vyšší zásah retenčních kampaní</span></div>
+        </div>
+
+        <blockquote class="study-quote">
+          <p>„Dřív jsme o odcházejícím zákazníkovi věděli, až když poslal výpověď. Teď devět dní předem — a většinou ho udržíme."</p>
+          <footer>Petra Dvořáková — ředitelka zákaznického úspěchu, Velomo</footer>
+        </blockquote>
+      </article>
+
+      <div class="studies-cta">
+        <p>Chcete podobná čísla ve své firmě? Začíná to 30minutovým posouzením.</p>
+        <a href="index.html#kontakt" class="btn btn-black">Rezervovat konzultaci</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer-wrap">
+    <div class="legal-foot frame">
+      <a href="index.html" class="brand-foot">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <rect x="3" y="3" width="8" height="18" rx="4" fill="#000"/>
+          <rect x="13" y="3" width="8" height="18" rx="4" fill="#000"/>
+        </svg>
+        Branzly
+      </a>
+      <p class="copyright">© Branzly <span id="year"></span>. Všechna práva vyhrazena.</p>
+    </div>
+  </footer>
+
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

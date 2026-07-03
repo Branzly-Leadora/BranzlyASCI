@@ -31,13 +31,21 @@ const plxEls = [...document.querySelectorAll("[data-plx]")];
 const heroVis = document.getElementById("heroVisual");
 const finePointer = matchMedia("(pointer: fine)").matches;
 let tiltX = 0, tiltY = 0, tiltTX = 0, tiltTY = 0;
+/* pozice kurzoru nad hero plátnem (normalizovaná) — znaky se rozestupují */
+let heroMxN = -9, heroMyN = -9;
+const heroCanvasEl = document.getElementById("asciiHero");
 if (heroVis && finePointer && !reduceMotion) {
   heroVis.addEventListener("mousemove", (e) => {
     const r = heroVis.getBoundingClientRect();
     tiltTX = ((e.clientY - r.top) / r.height - 0.5) * -4;
     tiltTY = ((e.clientX - r.left) / r.width - 0.5) * 5;
+    if (heroCanvasEl) {
+      const cr = heroCanvasEl.getBoundingClientRect();
+      heroMxN = (e.clientX - cr.left) / cr.width;
+      heroMyN = (e.clientY - cr.top) / cr.height;
+    }
   });
-  heroVis.addEventListener("mouseleave", () => { tiltTX = 0; tiltTY = 0; });
+  heroVis.addEventListener("mouseleave", () => { tiltTX = 0; tiltTY = 0; heroMxN = -9; heroMyN = -9; });
   heroVis.parentElement.style.perspective = "900px";
 }
 
@@ -70,6 +78,8 @@ function mainRaf(time) {
     quoteRaf();
     marqueeRaf(dt);
     orbitRaf(time / 1000);
+    timelineRaf();
+    cursorRaf();
     if (meetVisual) {
       const mr = meetVisual.getBoundingClientRect();
       if (mr.bottom > -60 && mr.top < innerHeight + 60) {
@@ -151,6 +161,41 @@ function orbitRaf(t) {
 }
 orbitRaf(0); // výchozí rozmístění ještě před prvním snímkem
 
+/* živé počítadlo zpracovaných úloh u orbity */
+const orbitCount = document.getElementById("orbitCount");
+if (orbitCount && orbitEl) {
+  let n = 1180 + Math.floor(Math.random() * 140);
+  const fmt = () => { orbitCount.textContent = n.toLocaleString("cs-CZ"); };
+  fmt();
+  setInterval(() => {
+    const r = orbitEl.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return;
+    n += 1 + Math.floor(Math.random() * 3);
+    fmt();
+  }, 900);
+}
+
+/* ---------- timeline: linka se kreslí podle scrollu, body se rozsvěcí ---------- */
+const tlEl = document.getElementById("timeline");
+const tlProgress = document.getElementById("tlProgress");
+let tlDots = [];
+function tlMeasure() {
+  if (!tlEl) return;
+  tlDots = [...tlEl.querySelectorAll(".tl-dot")].map((el) => ({
+    el, y: el.parentElement.offsetTop + el.offsetTop,
+  }));
+}
+if (tlEl) { tlMeasure(); addEventListener("resize", tlMeasure); addEventListener("load", tlMeasure); }
+function timelineRaf() {
+  if (!tlEl || !tlProgress) return;
+  const r = tlEl.getBoundingClientRect();
+  if (r.bottom < -60 || r.top > innerHeight + 60) return;
+  const p = clamp01((innerHeight * 0.72 - r.top) / r.height);
+  tlProgress.style.transform = `scaleY(${p.toFixed(4)})`;
+  const py = p * r.height;
+  for (const d of tlDots) d.el.classList.toggle("on", d.y <= py);
+}
+
 /* ---------- word-split: maskované nadpisy (StackGrid styl) ---------- */
 function maskSplit(el) {
   const words = el.textContent.trim().split(/\s+/);
@@ -228,6 +273,61 @@ function quoteRaf() {
   }
 }
 
+/* ---------- vlastní kurzor (tečka -> kroužek nad interaktivními prvky) ---------- */
+let cursorEl = null, curX = -100, curY = -100, curTX = -100, curTY = -100;
+if (finePointer && !reduceMotion) {
+  cursorEl = document.createElement("i");
+  cursorEl.className = "cursor-dot";
+  document.body.appendChild(cursorEl);
+  addEventListener("mousemove", (e) => {
+    curTX = e.clientX; curTY = e.clientY;
+    cursorEl.classList.add("on");
+  });
+  document.documentElement.addEventListener("mouseleave", () => cursorEl.classList.remove("on"));
+  const INTERACTIVE = "a, button, summary, input, textarea, .cal-day, .cal-time";
+  addEventListener("mouseover", (e) => cursorEl.classList.toggle("big", !!e.target.closest(INTERACTIVE)));
+}
+function cursorRaf() {
+  if (!cursorEl) return;
+  curX += (curTX - curX) * 0.22;
+  curY += (curTY - curY) * 0.22;
+  cursorEl.style.transform = `translate(${curX.toFixed(1)}px, ${curY.toFixed(1)}px)`;
+}
+
+/* ---------- easter egg: klávesa G zapne design mřížku ---------- */
+addEventListener("keydown", (e) => {
+  if (e.key.toLowerCase() !== "g" || e.metaKey || e.ctrlKey || e.altKey) return;
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "textarea") return;
+  document.body.classList.toggle("grid-on");
+});
+
+/* ---------- selection handles na hover karet (design-tool motiv) ---------- */
+document.querySelectorAll(".tier-card, .feature-cell").forEach((card) => {
+  card.classList.add("handles");
+  for (let i = 1; i <= 4; i++) {
+    const h = document.createElement("i");
+    h.className = `h h${i}`;
+    card.appendChild(h);
+  }
+});
+
+/* ---------- počítadla ve stats sekci ---------- */
+document.querySelectorAll(".stat-num").forEach((el) => {
+  const target = +el.dataset.count;
+  new IntersectionObserver(([en], io) => {
+    if (!en.isIntersecting) return;
+    io.disconnect();
+    const t0 = performance.now(), dur = 1400;
+    (function tick(now) {
+      const p = clamp01((now - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }, { threshold: 0.5 }).observe(el);
+});
+
 /* ---------- magnetická tlačítka ---------- */
 if (finePointer && !reduceMotion) {
   document.querySelectorAll(".btn").forEach((btn) => {
@@ -246,7 +346,7 @@ if (finePointer && !reduceMotion) {
    jejich slova zůstala navždy schovaná pod maskou */
 const reveals = document.querySelectorAll(".reveal, main h3.split:not(.reveal)");
 // stagger: pořadí v rámci rodiče -> --i
-document.querySelectorAll(".feature-grid, .case-grid, .faq-list, .tag-strip").forEach((parent) => {
+document.querySelectorAll(".feature-grid, .case-grid, .faq-list, .tag-strip, .stats-grid").forEach((parent) => {
   [...parent.children].forEach((child, i) => child.style.setProperty("--i", i));
 });
 if ("IntersectionObserver" in window && !reduceMotion) {
@@ -353,9 +453,19 @@ function noise(x, y, t) {
   return 0.5 + 0.5 * Math.sin(x * 12.9 + t * 0.7) * Math.cos(y * 9.7 - t * 0.5);
 }
 
-/* hero: dvě ruce/laloky natahující se k sobě */
+/* hero: dvě ruce/laloky natahující se k sobě; znaky se rozestupují kolem kurzoru */
 const heroCanvas = document.getElementById("asciiHero");
 if (heroCanvas) asciiRender(heroCanvas, (x, y, t) => {
+  if (heroMxN > -5) {
+    const dx = x - heroMxN, dy = (y - heroMyN) * 0.49; // poměr stran plátna
+    const dd = dx * dx + dy * dy;
+    const f = Math.exp(-dd / 0.006);
+    if (f > 0.02) {
+      const inv = 1 / Math.sqrt(dd + 1e-4);
+      x += dx * inv * 0.035 * f;
+      y += dy * inv * 0.07 * f;
+    }
+  }
   const wob = 0.015 * Math.sin(t * 0.8 + y * 6);
   let v = 0;
   // levý lalok s "prsty"
@@ -580,7 +690,14 @@ function updateTerm() {
   termInput.value = parts.join(" ");
 }
 
-if (calEl) {
+/* Cal.com rezervace: po vytvoření účtu vyplňte odkaz (např. "branzly/konzultace")
+   a místo vlastního kalendáře se vloží živý rezervační widget se skutečnými sloty */
+const CAL_LINK = "";
+
+if (calEl && CAL_LINK) {
+  calEl.classList.add("cal-embed");
+  calEl.innerHTML = `<iframe src="https://cal.com/${CAL_LINK}?embed=true&theme=dark" loading="lazy" title="Rezervace konzultace"></iframe>`;
+} else if (calEl) {
   let view = new Date();
   view.setDate(1);
 
@@ -627,10 +744,14 @@ if (calEl) {
   renderCal();
 }
 
-/* ---------- kontaktní formulář ---------- */
-// odesílá přes FormSubmit (po první zprávě přijde na ahoj@branzly.cz aktivační
-// e-mail — stačí potvrdit); při výpadku otevře e-mailového klienta s předvyplněnou zprávou
-const FORM_ENDPOINT = "https://formsubmit.co/ajax/ahoj@branzly.cz";
+/* ---------- kontaktní formulář ----------
+   Kaskáda odeslání:
+   1. /api/contact — vlastní backend (Vercel serverless + Resend, viz api/contact.js);
+      funguje po nasazení na Vercel s env RESEND_API_KEY
+   2. FormSubmit — bez backendu; po první zprávě přijde na ahoj@branzly.cz
+      aktivační e-mail, stačí potvrdit
+   3. mailto — otevře e-mailového klienta návštěvníka s předvyplněnou zprávou */
+const FORM_ENDPOINTS = ["/api/contact", "https://formsubmit.co/ajax/ahoj@branzly.cz"];
 const contactForm = document.getElementById("contactForm");
 if (contactForm) {
   const fName = document.getElementById("fName");
@@ -661,16 +782,22 @@ if (contactForm) {
     statusEl.textContent = "Odesílám…";
     statusEl.className = "form-status";
     try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 8000);
-      const res = await fetch(FORM_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ name, email, term, message: msg, _subject: `Poptávka z webu — ${name}` }),
-        signal: ctrl.signal,
-      });
-      clearTimeout(timer);
-      if (!res.ok) throw new Error(String(res.status));
+      let sent = false;
+      for (const endpoint of FORM_ENDPOINTS) {
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 8000);
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({ name, email, term, message: msg, _subject: `Poptávka z webu — ${name}` }),
+            signal: ctrl.signal,
+          });
+          clearTimeout(timer);
+          if (res.ok) { sent = true; break; }
+        } catch { /* zkusí další endpoint */ }
+      }
+      if (!sent) throw new Error("no endpoint");
       contactForm.reset();
       selDate = null; selTime = null; updateTerm(); calRerender();
       statusEl.textContent = "✓ Díky za poptávku! Ozveme se vám do 24 hodin.";

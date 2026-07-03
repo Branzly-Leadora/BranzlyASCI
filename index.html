@@ -8,10 +8,20 @@
   <meta property="og:title" content="Branzly — Zcela nová éra AI" />
   <meta property="og:description" content="Vlastní AI agenti a bezpečné datové pipeline, které odstraní vaše manuální procesy." />
   <meta property="og:type" content="website" />
+  <!-- og:image musí být absolutní URL — po nasazení upravte doménu, pokud nebude branzly.cz -->
+  <meta property="og:image" content="https://branzly.cz/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='8' height='18' rx='4'/%3E%3Crect x='13' y='3' width='8' height='18' rx='4'/%3E%3C/svg%3E" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400;6..144,500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <!-- Analytika bez cookies (žádná cookie lišta není potřeba): po založení účtu
+       na plausible.io odkomentujte a případně upravte doménu
+  <script defer data-domain="branzly.cz" src="https://plausible.io/js/script.js"></script> -->
+  <noscript><style>.reveal, .load { opacity: 1 !important; transform: none !important; filter: none !important; }</style></noscript>
+  <!-- fonty jsou self-hostované: rychlejší načtení a žádné předání IP třetí straně -->
+  <link rel="stylesheet" href="fonts/fonts.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -61,7 +71,9 @@
         <span class="crop tl"></span><span class="crop tr"></span>
         <span class="crop bl"></span><span class="crop br"></span>
         <canvas id="asciiHero" width="900" height="440" aria-label="Abstraktní ASCII vizualizace dvou rukou"></canvas>
+        <span class="annot-text annot-fig" aria-hidden="true">fig. 01 — autonomní pipeline</span>
       </div>
+      <a href="#o-nas" class="scroll-cue load load-5" aria-label="Posunout na další sekci">[ scroll ↓ ]</a>
     </section>
 
     <!-- ===== TRUSTED (marquee) ===== -->
@@ -90,6 +102,28 @@
         <canvas id="asciiMeet" width="1180" height="420" aria-label="Digitální a lidská ruka se dotýkají"></canvas>
         <span class="annot annot-ai"><i class="annot-dot"></i><i class="annot-line"></i><span class="annot-text">Ta AI</span></span>
         <span class="annot annot-human"><i class="annot-dot"></i><i class="annot-line"></i><span class="annot-text">Člověk</span></span>
+      </div>
+    </section>
+
+    <!-- ===== ČÍSLA (social proof) ===== -->
+    <section class="stats" aria-label="Výsledky v číslech">
+      <div class="stats-grid">
+        <div class="stat reveal">
+          <span class="stat-num" data-count="11">0</span><span class="stat-unit">min</span>
+          <p>zpracování zakázky —<br />před nasazením 48 hodin</p>
+        </div>
+        <div class="stat reveal">
+          <span class="stat-num" data-count="80">0</span><span class="stat-unit">%</span>
+          <p>opakujících se úkolů<br />vyřešeno automaticky</p>
+        </div>
+        <div class="stat reveal">
+          <span class="stat-num" data-count="7">0</span><span class="stat-unit">dní</span>
+          <p>od zadání auditu<br />k plánu nasazení</p>
+        </div>
+        <div class="stat reveal">
+          <span class="stat-num" data-count="100">0</span><span class="stat-unit">%</span>
+          <p>kódu a duševního vlastnictví<br />zůstává vám</p>
+        </div>
       </div>
     </section>
 
@@ -144,6 +178,49 @@
         <span class="orbit-node on5">PostgreSQL</span>
         <span class="orbit-node on6">Zendesk</span>
       </div>
+      <p class="orbit-counter reveal"><span class="chip-black">Úloh zpracováno dnes: <span id="orbitCount">1 200</span></span></p>
+    </section>
+
+    <!-- ===== PROCES ===== -->
+    <section class="process" id="proces">
+      <h3 class="reveal">Jak spolupráce probíhá</h3>
+      <p class="section-sub reveal">Od prvního hovoru k běžící automatizaci<br />ve čtyřech předvídatelných krocích.</p>
+      <div class="timeline" id="timeline">
+        <i class="tl-track" aria-hidden="true"></i>
+        <i class="tl-progress" id="tlProgress" aria-hidden="true"></i>
+        <div class="tl-step reveal">
+          <span class="tl-dot" aria-hidden="true"></span>
+          <div class="tl-card">
+            <span class="chip-gray">Krok 1 · den 1–7</span>
+            <h4>Vstupní audit</h4>
+            <p>Zmapujeme vaše manuální procesy, datové toky a starší systémy. Najdeme místa, kde automatizace vrátí nejvíc.</p>
+          </div>
+        </div>
+        <div class="tl-step reveal">
+          <span class="tl-dot" aria-hidden="true"></span>
+          <div class="tl-card">
+            <span class="chip-gray">Krok 2 · týden 2</span>
+            <h4>Návrh řešení</h4>
+            <p>Dostanete konkrétní plán: architekturu, rozpočet, harmonogram a očekávanou návratnost. Žádné překvapení v půlce projektu.</p>
+          </div>
+        </div>
+        <div class="tl-step reveal">
+          <span class="tl-dot" aria-hidden="true"></span>
+          <div class="tl-card">
+            <span class="chip-gray">Krok 3 · týden 3–6</span>
+            <h4>Stavba a nasazení</h4>
+            <p>Postavíme agenty a datové pipeline, propojíme vaše systémy a zaškolíme tým. Nasazujeme postupně, bez výpadku provozu.</p>
+          </div>
+        </div>
+        <div class="tl-step reveal">
+          <span class="tl-dot" aria-hidden="true"></span>
+          <div class="tl-card">
+            <span class="chip-gray">Krok 4 · průběžně</span>
+            <h4>Provoz a optimalizace</h4>
+            <p>Monitorujeme stabilitu API a agentů, aktualizujeme modely a každý měsíc reportujeme dopad na váš byznys.</p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ===== ÚROVNĚ SLUŽEB ===== -->
@@ -177,6 +254,7 @@
         <!-- Fáze 2: karta vlevo, štítek vpravo -->
         <div class="tier-row tier-row-left reveal">
           <article class="tier-card">
+            <span class="tier-badge chip-black">★ Nejčastější volba</span>
             <div class="tier-left">
               <span class="chip-gray">Fáze 2</span>
               <h4>Hlavní nasazení</h4>
@@ -230,6 +308,7 @@
           <i class="h h1"></i><i class="h h2"></i><i class="h h3"></i><i class="h h4"></i>
           <header><i class="case-mark cm-1"></i><h4>Simplifio Digital</h4></header>
           <p>Odstranili jsme ruční fakturaci u globální logistické firmy nasazením event-driven orchestrace přes middleware. Zpracování kleslo ze 48 hodin na 11 minut.</p>
+          <a class="case-link" href="pripadove-studie.html#simplifio">Celá studie →</a>
           <footer>
             <div><span class="person">Kateřina Machová</span><span class="role">Provozní ředitelka</span></div>
             <canvas class="avatar" data-seed="7" width="44" height="44"></canvas>
@@ -238,6 +317,7 @@
         <article class="case">
           <header><i class="case-mark cm-2"></i><h4>Koruna Bank</h4></header>
           <p>Postavili jsme stavového konverzačního agenta vytrénovaného výhradně na proprietárních bankovních datech, který samostatně řeší dotazy helpdesku bez porušení regulí.</p>
+          <a class="case-link" href="pripadove-studie.html#koruna">Celá studie →</a>
           <footer>
             <div><span class="person">Tomáš Zbořil</span><span class="role">VP pro engineering</span></div>
             <canvas class="avatar" data-seed="13" width="44" height="44"></canvas>
@@ -246,6 +326,7 @@
         <article class="case">
           <header><i class="case-mark cm-3"></i><h4>Velomo</h4></header>
           <p>Prediktivní AI middleware analyzuje telemetrii produktu v reálném čase a samostatně spouští personalizované zásahy, které výrazně snižují odchod zákazníků.</p>
+          <a class="case-link" href="pripadove-studie.html#velomo">Celá studie →</a>
           <footer>
             <div><span class="person">Petra Dvořáková</span><span class="role">Ředitelka zákaznického úspěchu</span></div>
             <canvas class="avatar" data-seed="29" width="44" height="44"></canvas>
@@ -259,7 +340,7 @@
         <div class="quote-person">
           <span class="person">Kateřina Machová</span>
           <span class="role">Provozní ředitelka</span>
-          <a href="#kontakt" class="btn btn-gray">Přečíst případovou studii</a>
+          <a href="pripadove-studie.html#simplifio" class="btn btn-gray">Přečíst případovou studii</a>
         </div>
         <blockquote>„Ruční přepisování dat nám škrtilo marže a zdržovalo zásilky na mezinárodních celních kontrolách. Branzly přeskočilo obvyklé AI marketingové řeči a postavilo robustní řešení na úrovni infrastruktury. Autonomní pipeline kompletně proměnila naši jednotkovou ekonomiku, zkrátila zpracování z dnů na minuty a umožnila nám škálovat průchodnost bez navyšování provozního týmu."</blockquote>
       </figure>
@@ -334,8 +415,11 @@
             <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
           </form>
         </div>
-        <div class="calendar reveal" id="calendar" aria-label="Kalendář rezervací">
-          <!-- generováno v script.js -->
+        <div class="calendar-wrap reveal">
+          <span class="annot-text annot-cal" aria-hidden="true">⌀ odpovídáme do 4 hodin</span>
+          <div class="calendar" id="calendar" aria-label="Kalendář rezervací">
+            <!-- generováno v script.js -->
+          </div>
         </div>
       </div>
     </section>

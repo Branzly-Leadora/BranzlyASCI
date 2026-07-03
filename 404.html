@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Branzly</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='8' height='18' rx='4'/%3E%3Crect x='13' y='3' width='8' height='18' rx='4'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="fonts/fonts.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .nf { text-align: center; padding: clamp(64px, 10vw, 120px) 32px clamp(72px, 11vw, 130px); }
+    .nf canvas { display: block; margin: 0 auto 8px; width: min(420px, 80vw); height: auto; }
+    .nf h1 { font-size: clamp(44px, 7vw, 64px); }
+    .nf p { color: var(--gray-2); font-size: 13.5px; margin: 14px 0 28px; }
+  </style>
+</head>
+<body>
+  <header class="nav-wrap">
+    <div class="nav nav-simple frame">
+      <nav class="nav-side nav-left" aria-label="Navigace">
+        <a href="index.html"><span>[</span>Zpět na web<span>]</span></a>
+      </nav>
+      <a href="index.html" class="brand" aria-label="Branzly domů">
+        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+          <rect x="3" y="3" width="8" height="18" rx="4" fill="#000"/>
+          <rect x="13" y="3" width="8" height="18" rx="4" fill="#000"/>
+        </svg>
+      </a>
+      <nav class="nav-side nav-right" aria-label="Kontakt">
+        <a href="mailto:ahoj@branzly.cz"><span>[</span>Kontakt<span>]</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="frame">
+    <section class="nf">
+      <canvas id="ascii404" width="560" height="260" aria-hidden="true"></canvas>
+      <h1>404</h1>
+      <p>Tahle stránka se rozpadla na znaky.<br />Zkuste to znovu z domovské stránky.</p>
+      <a href="index.html" class="btn btn-black">Zpět domů</a>
+    </section>
+  </main>
+
+  <script>
+    // statická ASCII silueta rozpadající se ruky
+    (function () {
+      const cv = document.getElementById("ascii404");
+      const ctx = cv.getContext("2d");
+      const RAMP = " .·:;+*#@", cell = 8;
+      const cols = Math.floor(cv.width / cell), rows = Math.floor(cv.height / (cell * 1.15));
+      ctx.font = (cell + 1) + "px monospace";
+      ctx.textBaseline = "top";
+      const lobe = (x, y, cx, cy, rx, ry) => {
+        const dx = (x - cx) / rx, dy = (y - cy) / ry;
+        return Math.max(0, 1 - (dx * dx + dy * dy));
+      };
+      let seed = 42;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = c / cols, y = r / rows;
+          let v = Math.max(
+            lobe(x, y, 0.38, 0.55, 0.24, 0.34),
+            lobe(x, y, 0.60, 0.42, 0.10, 0.08)
+          );
+          // směrem doprava se silueta "rozpadá"
+          if (rnd() < (x - 0.45) * 1.6) v = 0;
+          if (v <= 0.05) continue;
+          v = Math.min(1, v * (0.55 + 0.45 * rnd()));
+          const shade = 40 + Math.floor((1 - v) * 130);
+          ctx.fillStyle = "rgb(" + shade + "," + shade + "," + shade + ")";
+          ctx.fillText(RAMP[Math.floor(v * (RAMP.length - 1))], c * cell, r * cell * 1.15);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

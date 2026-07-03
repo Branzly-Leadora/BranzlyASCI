@@ -421,18 +421,27 @@ h4 { font-size: 16px; font-weight: 500; }
 .role { font-size: 12px; color: var(--gray-3); }
 .avatar { width: 44px; height: 44px; border-radius: 50%; flex: none; image-rendering: pixelated; }
 
-/* karta se selection handles */
+/* selection handles (design-tool motiv) — trvale na vybrané kartě,
+   na hover u karet ceníku a funkcí */
 .case.selected { outline: 1px dashed var(--gray-1); outline-offset: -1px; }
-.case .h {
+.h {
   position: absolute;
   width: 8px; height: 8px;
   background: var(--ink);
   z-index: 2;
 }
-.case .h1 { top: -4px; left: -4px; }
-.case .h2 { top: -4px; right: -4px; }
-.case .h3 { bottom: -4px; left: -4px; }
-.case .h4 { bottom: -4px; right: -4px; }
+.h.h1 { top: -4px; left: -4px; }
+.h.h2 { top: -4px; right: -4px; }
+.h.h3 { bottom: -4px; left: -4px; }
+.h.h4 { bottom: -4px; right: -4px; }
+.handles { position: relative; }
+.handles .h {
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.handles:hover .h { opacity: 1; transform: none; }
+.handles:hover { outline: 1px dashed var(--gray-2); outline-offset: -1px; }
 
 .big-quote {
   display: grid;
@@ -781,6 +790,189 @@ h4 { font-size: 16px; font-weight: 500; }
 .nav-wrap { transition: transform 0.4s var(--ease); }
 .nav-wrap.hidden { transform: translateY(-100%); }
 
+/* ===== VÝBĚR TEXTU ===== */
+::selection { background: var(--blue); color: #fff; }
+
+/* ===== SCROLL CUE (hero) ===== */
+.scroll-cue {
+  display: inline-block;
+  margin-top: 36px;
+  font-size: 12px;
+  color: var(--gray-3);
+  transition: color 0.2s;
+  animation: loadIn 0.9s var(--ease) forwards, cueFloat 2.4s ease-in-out 1.2s infinite;
+}
+.scroll-cue:hover { color: var(--ink); }
+.load-5 { animation-delay: 0.65s, 1.2s; }
+@keyframes cueFloat { 50% { transform: translateY(5px); } }
+
+/* ===== FIGMA-STYLE ŠTÍTKY ===== */
+.annot-fig {
+  position: absolute;
+  left: 30px;
+  bottom: 8px;
+  color: var(--gray-3);
+  font-family: monospace;
+  font-size: 11px;
+}
+.calendar-wrap { position: relative; }
+.annot-cal {
+  position: absolute;
+  top: -11px;
+  right: 20px;
+  z-index: 2;
+}
+
+/* ===== STATS (napočítávaná čísla) ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.stat {
+  padding: 46px 24px 42px;
+  text-align: center;
+}
+.stat + .stat { border-left: 1px dashed var(--line-strong); }
+.stat-num {
+  font-family: var(--serif);
+  font-size: clamp(40px, 4.6vw, 56px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-unit {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 21px;
+  color: var(--gray-3);
+  margin-left: 5px;
+}
+.stat p { color: var(--gray-2); font-size: 12.5px; margin-top: 12px; }
+
+/* ===== PROCES / TIMELINE ===== */
+.process { padding: clamp(56px, 8vw, 90px) 32px; }
+.timeline {
+  position: relative;
+  max-width: 780px;
+  margin: 56px auto 0;
+  display: grid;
+  gap: 46px;
+}
+.tl-track, .tl-progress {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+}
+.tl-track {
+  background: repeating-linear-gradient(180deg, var(--line-strong) 0 4px, transparent 4px 9px);
+}
+.tl-progress {
+  background: var(--ink);
+  transform-origin: top;
+  transform: scaleY(0);
+  will-change: transform;
+}
+.tl-step { position: relative; width: calc(50% - 44px); }
+.tl-step:nth-of-type(even) { margin-left: auto; }
+.tl-dot {
+  position: absolute;
+  top: 24px;
+  left: calc(100% + 44px);
+  width: 9px; height: 9px;
+  transform: translateX(-50%);
+  background: var(--bg);
+  border: 1px solid var(--gray-4);
+  transition: background 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  z-index: 1;
+}
+.tl-step:nth-of-type(even) .tl-dot { left: auto; right: calc(100% + 44px); transform: translateX(50%); }
+.tl-dot.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.06);
+}
+.tl-card {
+  border: 1px dashed var(--line-strong);
+  background: var(--bg);
+  padding: 22px 24px;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.tl-card:hover { transform: translateY(-3px); box-shadow: 0 12px 34px rgba(0, 0, 0, 0.06); }
+.tl-card h4 { margin: 12px 0 6px; }
+.tl-card p { color: var(--gray-2); font-size: 13px; }
+
+/* ===== ORBIT COUNTER ===== */
+.orbit-counter { margin-top: 40px; }
+.orbit-counter .chip-black { font-variant-numeric: tabular-nums; }
+
+/* ===== BADGE CENÍKU ===== */
+.tier-card { position: relative; }
+.tier-badge {
+  position: absolute;
+  top: -12px;
+  left: 26px;
+  z-index: 1;
+}
+
+/* ===== ODKAZY NA STUDIE ===== */
+.case-link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-1);
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.3s var(--ease), color 0.2s;
+}
+.case-link:hover { color: var(--ink); background-size: 100% 1px; }
+
+/* ===== KRESLÍCÍ SE PODTRŽENÍ ODKAZŮ ===== */
+.nav-side a, .footer-col a, .nav-mobile a {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.3s var(--ease), color 0.2s;
+}
+.nav-side a:hover, .footer-col a:hover, .nav-mobile a:hover { background-size: 100% 1px; }
+
+/* ===== VLASTNÍ KURZOR ===== */
+.cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 8px; height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 1.5px solid transparent;
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0;
+  transition: width 0.25s var(--ease), height 0.25s var(--ease), margin 0.25s var(--ease),
+    background 0.25s var(--ease), border-color 0.25s var(--ease), opacity 0.3s;
+}
+.cursor-dot.on { opacity: 1; }
+.cursor-dot.big {
+  width: 34px; height: 34px;
+  margin: -17px 0 0 -17px;
+  background: rgba(0, 0, 0, 0);
+  border-color: var(--ink);
+}
+@media (pointer: coarse) { .cursor-dot { display: none; } }
+
+/* ===== DESIGN MŘÍŽKA (klávesa G) ===== */
+body.grid-on::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.13) 1px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+/* ===== CAL.COM EMBED ===== */
+.calendar.cal-embed { padding: 0; overflow: hidden; }
+.calendar.cal-embed iframe { display: block; width: 100%; height: 560px; border: 0; }
+
 /* ===== PRÁVNÍ STRÁNKY ===== */
 .legal {
   max-width: 720px;
@@ -845,6 +1037,15 @@ html.lenis, html.lenis body { height: auto; }
   .intersection h3, .intersection .section-sub { padding: 0 20px; }
 
   .feature-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stat { padding: 32px 18px 28px; }
+  .stat:nth-child(3) { border-left: 0; }
+  .stat:nth-child(n+3) { border-top: 1px dashed var(--line-strong); }
+  .timeline { gap: 32px; }
+  .tl-track, .tl-progress { left: 4px; }
+  .tl-step { width: auto; padding-left: 32px; }
+  .tl-step:nth-of-type(even) { margin-left: 0; }
+  .tl-dot, .tl-step:nth-of-type(even) .tl-dot { left: 4px; right: auto; transform: translateX(-50%); }
   .tier-row { padding: 0 !important; justify-content: center !important; }
   .tier-annot { display: none; }
   .tier-card { grid-template-columns: 1fr; }
