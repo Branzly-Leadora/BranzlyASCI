@@ -92,32 +92,36 @@ function mainRaf(time) {
 }
 requestAnimationFrame(mainRaf);
 
-/* ---------- mobilní nav ---------- */
+/* ---------- mobilní nav (jen na stránkách, které ji mají) ---------- */
 const toggle = document.getElementById("navToggle");
 const mobile = document.getElementById("navMobile");
-toggle.addEventListener("click", () => {
-  const open = mobile.classList.toggle("open");
-  toggle.setAttribute("aria-expanded", String(open));
-});
-mobile.addEventListener("click", (e) => {
-  if (e.target.tagName === "A") {
-    mobile.classList.remove("open");
-    toggle.setAttribute("aria-expanded", "false");
-  }
-});
+if (toggle && mobile) {
+  toggle.addEventListener("click", () => {
+    const open = mobile.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+  mobile.addEventListener("click", (e) => {
+    if (e.target.tagName === "A") {
+      mobile.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+  });
+}
 
 /* ---------- marquee: zdvojení pásky, JS pohon reagující na rychlost scrollu ---------- */
 const track = document.getElementById("marqueeTrack");
-track.innerHTML += track.innerHTML;
 let mqX = 0, mqHalf = 0;
-const mqMeasure = () => { mqHalf = track.scrollWidth / 2; };
-if (!reduceMotion) {
-  track.style.animation = "none";
-  mqMeasure();
-  addEventListener("resize", mqMeasure);
+const mqMeasure = () => { if (track) mqHalf = track.scrollWidth / 2; };
+if (track) {
+  track.innerHTML += track.innerHTML;
+  if (!reduceMotion) {
+    track.style.animation = "none";
+    mqMeasure();
+    addEventListener("resize", mqMeasure);
+  }
 }
 function marqueeRaf(dt) {
-  if (!mqHalf) return;
+  if (!track || !mqHalf) return;
   const r = track.getBoundingClientRect();
   if (r.bottom < 0 || r.top > innerHeight) return;
   const vel = lenis ? Math.abs(lenis.velocity) : 0;
@@ -312,8 +316,8 @@ document.querySelectorAll(".tier-card, .feature-cell").forEach((card) => {
   }
 });
 
-/* ---------- počítadla ve stats sekci ---------- */
-document.querySelectorAll(".stat-num").forEach((el) => {
+/* ---------- napočítávaná čísla (stats sekce, mockupy) ---------- */
+document.querySelectorAll("[data-count]").forEach((el) => {
   const target = +el.dataset.count;
   new IntersectionObserver(([en], io) => {
     if (!en.isIntersecting) return;
@@ -326,6 +330,29 @@ document.querySelectorAll(".stat-num").forEach((el) => {
       if (p < 1) requestAnimationFrame(tick);
     })(t0);
   }, { threshold: 0.5 }).observe(el);
+});
+
+/* ---------- mock chat: přehrání konverzace při najetí do viewportu ---------- */
+document.querySelectorAll('[data-mock="chat"]').forEach((mock) => {
+  const items = [...mock.querySelectorAll(".chat-msg, .chat-typing")];
+  if (!items.length) return;
+  new IntersectionObserver(([en], io) => {
+    if (!en.isIntersecting) return;
+    io.disconnect();
+    let t = 500;
+    for (const el of items) {
+      if (el.classList.contains("chat-typing")) {
+        const at = t;
+        setTimeout(() => el.classList.add("show"), at);
+        setTimeout(() => el.classList.remove("show"), at + 1000);
+        t += 1000;
+      } else {
+        const at = t;
+        setTimeout(() => el.classList.add("show"), at);
+        t += el.classList.contains("user") ? 800 : 1300;
+      }
+    }
+  }, { threshold: 0.35 }).observe(mock);
 });
 
 /* ---------- magnetická tlačítka ---------- */
@@ -346,7 +373,7 @@ if (finePointer && !reduceMotion) {
    jejich slova zůstala navždy schovaná pod maskou */
 const reveals = document.querySelectorAll(".reveal, main h3.split:not(.reveal)");
 // stagger: pořadí v rámci rodiče -> --i
-document.querySelectorAll(".feature-grid, .case-grid, .faq-list, .tag-strip, .stats-grid").forEach((parent) => {
+document.querySelectorAll(".feature-grid, .case-grid, .faq-list, .tag-strip, .stats-grid, .study-stats").forEach((parent) => {
   [...parent.children].forEach((child, i) => child.style.setProperty("--i", i));
 });
 if ("IntersectionObserver" in window && !reduceMotion) {
@@ -815,4 +842,5 @@ if (contactForm) {
 }
 
 /* ---------- rok v patičce ---------- */
-document.getElementById("year").textContent = new Date().getFullYear();
+const yearEl = document.getElementById("year");
+if (yearEl) yearEl.textContent = new Date().getFullYear();

@@ -6,8 +6,11 @@
   <title>Případové studie — Branzly</title>
   <meta name="description" content="Detailní případové studie nasazení AI agentů a datových pipeline: Simplifio Digital, Koruna Bank a Velomo." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='8' height='18' rx='4'/%3E%3Crect x='13' y='3' width='8' height='18' rx='4'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="stylesheet" href="fonts/fonts.css" />
   <link rel="stylesheet" href="style.css" />
+  <noscript><style>.reveal, .load { opacity: 1 !important; transform: none !important; filter: none !important; }</style></noscript>
   <style>
     .studies { max-width: 780px; margin: 0 auto; padding: clamp(48px, 7vw, 80px) 32px clamp(64px, 9vw, 110px); }
     .studies-head h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(36px, 5.4vw, 50px); line-height: 1.1; }
@@ -58,43 +61,62 @@
   <main class="frame">
     <div class="studies">
       <div class="studies-head">
-        <h1>Případové studie</h1>
-        <p>Tři nasazení, tři různé obory, jeden princip: automatizace postavená na infrastruktuře, ne na marketingových slidech. Všechna čísla jsou provozní metriky po předání systému.</p>
+        <h1 class="load load-1">Případové studie</h1>
+        <p class="load load-2">Tři nasazení, tři různé obory, jeden princip: automatizace postavená na infrastruktuře, ne na marketingových slidech. Všechna čísla jsou provozní metriky po předání systému.</p>
       </div>
 
       <!-- ===== SIMPLIFIO ===== -->
       <article class="study" id="simplifio">
-        <div class="study-tags">
+        <div class="study-tags reveal">
           <span class="chip-gray">Logistika</span>
           <span class="chip-gray">Datové pipeline</span>
           <span class="chip-gray">Nasazení: 6 týdnů</span>
         </div>
-        <h2><i class="case-mark cm-1"></i>Simplifio Digital</h2>
-        <p class="lead">Globální logistická firma zpracovávala mezinárodní fakturaci ručně: tým čtyř lidí přepisoval údaje mezi TMS systémem, celní databází a účetnictvím. Každá zásilka čekala na papírování — v průměru 48 hodin.</p>
+        <h2 class="reveal"><i class="case-mark cm-1"></i>Simplifio Digital</h2>
+        <p class="lead reveal">Globální logistická firma zpracovávala mezinárodní fakturaci ručně: tým čtyř lidí přepisoval údaje mezi TMS systémem, celní databází a účetnictvím. Každá zásilka čekala na papírování — v průměru 48 hodin.</p>
 
         <h3>Výchozí stav</h3>
-        <ul>
+        <ul class="reveal">
           <li>4 pracovníci na plný úvazek jen na přepis dat mezi třemi systémy</li>
           <li>Chybovost ručního přepisu ~3 % — každá chyba znamenala zdržení na celnici</li>
           <li>Fakturace limitovala růst: víc zásilek = víc lidí</li>
         </ul>
 
         <h3>Řešení</h3>
-        <p>Postavili jsme event-driven orchestraci přes vlastní middleware: každá událost v TMS (naložení, přechod hranice, doručení) automaticky spouští validaci dat, vygenerování celních dokumentů a zaúčtování. Lidé řeší jen výjimky, které pipeline označí k ruční kontrole.</p>
-        <ul>
+        <p class="reveal">Postavili jsme event-driven orchestraci přes vlastní middleware: každá událost v TMS (naložení, přechod hranice, doručení) automaticky spouští validaci dat, vygenerování celních dokumentů a zaúčtování. Lidé řeší jen výjimky, které pipeline označí k ruční kontrole.</p>
+        <ul class="reveal">
           <li>Napojení na stávající TMS a účetní systém přes API, bez výměny softwaru</li>
           <li>Validační vrstva s pravidly pro 14 zemí</li>
           <li>Dashboard výjimek — tým vidí jen případy vyžadující rozhodnutí</li>
         </ul>
 
+        <h3>Náhled řešení</h3>
+        <div class="mock reveal" data-mock="pipeline">
+          <div class="mock-bar" aria-hidden="true"><i></i><i></i><i></i><span>pipeline-monitor — živý provoz</span><span class="mock-live">● běží</span></div>
+          <div class="mock-flow" aria-hidden="true">
+            <span class="mf-node">TMS</span><i class="mf-line"><i class="mf-dot"></i></i>
+            <span class="mf-node">Validace</span><i class="mf-line"><i class="mf-dot d2"></i></i>
+            <span class="mf-node">Celní dokumenty</span><i class="mf-line"><i class="mf-dot d3"></i></i>
+            <span class="mf-node">Účetnictví</span>
+          </div>
+          <div class="mock-rows">
+            <div class="mock-row"><span class="mr-id">#SH-88214</span><span class="mr-route">Praha → Hamburk</span><span class="mr-status ok">Zpracováno · 9 min</span></div>
+            <div class="mock-row"><span class="mr-id">#SH-88215</span><span class="mr-route">Brno → Vídeň</span><span class="mr-status ok">Zpracováno · 12 min</span></div>
+            <div class="mock-row"><span class="mr-id">#SH-88216</span><span class="mr-route">Ostrava → Katowice</span><span class="mr-status run">Probíhá · validace<i class="mr-prog"><i></i></i></span></div>
+            <div class="mock-row"><span class="mr-id">#SH-88217</span><span class="mr-route">Praha → Rotterdam</span><span class="mr-status warn">Výjimka → ruční kontrola</span></div>
+          </div>
+          <div class="mock-foot"><span>Dnes: <b data-count="247">0</b> zásilek</span><span>⌀ zpracování: <b>11 min</b></span><span class="mf-ok">● pipeline v provozu</span></div>
+        </div>
+        <p class="mock-caption reveal">Náhled monitorovacího dashboardu pipeline (ilustrační data).</p>
+
         <h3>Výsledek</h3>
         <div class="study-stats">
-          <div class="study-stat"><b>48 h → 11 min</b><span>doba zpracování zásilky</span></div>
-          <div class="study-stat"><b>−97 %</b><span>chybovost dokumentace</span></div>
-          <div class="study-stat"><b>3,2 měsíce</b><span>návratnost investice</span></div>
+          <div class="study-stat reveal"><b>48 h → 11 min</b><span>doba zpracování zásilky</span></div>
+          <div class="study-stat reveal"><b>−97 %</b><span>chybovost dokumentace</span></div>
+          <div class="study-stat reveal"><b>3,2 měsíce</b><span>návratnost investice</span></div>
         </div>
 
-        <blockquote class="study-quote">
+        <blockquote class="study-quote reveal">
           <p>„Autonomní pipeline kompletně proměnila naši jednotkovou ekonomiku. Škálujeme průchodnost bez navyšování provozního týmu."</p>
           <footer>Kateřina Machová — provozní ředitelka, Simplifio Digital</footer>
         </blockquote>
@@ -102,37 +124,52 @@
 
       <!-- ===== KORUNA BANK ===== -->
       <article class="study" id="koruna">
-        <div class="study-tags">
+        <div class="study-tags reveal">
           <span class="chip-gray">Bankovnictví</span>
           <span class="chip-gray">AI agent</span>
           <span class="chip-gray">Nasazení: 8 týdnů</span>
         </div>
-        <h2><i class="case-mark cm-2"></i>Koruna Bank</h2>
-        <p class="lead">Interní helpdesk banky dostával přes 900 dotazů denně — od resetů hesel po výklad interních směrnic. Odpovědi hledalo 12 operátorů v dokumentaci čítající tisíce stran. Veřejné AI nástroje byly kvůli regulaci nepoužitelné.</p>
+        <h2 class="reveal"><i class="case-mark cm-2"></i>Koruna Bank</h2>
+        <p class="lead reveal">Interní helpdesk banky dostával přes 900 dotazů denně — od resetů hesel po výklad interních směrnic. Odpovědi hledalo 12 operátorů v dokumentaci čítající tisíce stran. Veřejné AI nástroje byly kvůli regulaci nepoužitelné.</p>
 
         <h3>Výchozí stav</h3>
-        <ul>
+        <ul class="reveal">
           <li>Průměrná doba odpovědi 4,5 hodiny, špičky přes den</li>
           <li>Přísné požadavky: žádná data nesmí opustit infrastrukturu banky</li>
           <li>Znalosti roztříštěné v directivách, wiki a e-mailových vláknech</li>
         </ul>
 
         <h3>Řešení</h3>
-        <p>Nasadili jsme stavového konverzačního agenta na RAG architektuře běžící kompletně v privátním cloudu banky. Agent je vytrénovaný výhradně na interní dokumentaci, odpovědi dokládá citacemi zdrojů a složité případy předává lidem s celým kontextem konverzace.</p>
-        <ul>
+        <p class="reveal">Nasadili jsme stavového konverzačního agenta na RAG architektuře běžící kompletně v privátním cloudu banky. Agent je vytrénovaný výhradně na interní dokumentaci, odpovědi dokládá citacemi zdrojů a složité případy předává lidem s celým kontextem konverzace.</p>
+        <ul class="reveal">
           <li>Privátní vektorová databáze, API bez retence dat</li>
           <li>Každá odpověď s odkazem na zdrojovou směrnici — auditovatelnost</li>
           <li>Eskalační protokol: nejistota → předání operátorovi, nikdy odhad</li>
         </ul>
 
+        <h3>Náhled řešení</h3>
+        <div class="mock mock-dark reveal" data-mock="chat">
+          <div class="mock-bar" aria-hidden="true"><i></i><i></i><i></i><span>interní-asistent — privátní cloud</span><span class="mock-live">● online</span></div>
+          <div class="mock-chat">
+            <div class="chat-msg user">Jaký je limit pro okamžité platby u firemních účtů?</div>
+            <div class="chat-typing" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="chat-msg agent">Limit okamžité platby u firemních účtů je 2 500 000 Kč na transakci. Platba nad tento limit automaticky přechází do standardního zpracování.<span class="chat-cite">Zdroj: Směrnice PL-2024/07 · čl. 4 odst. 2</span></div>
+            <div class="chat-msg user">A kdo může limit klientovi navýšit?</div>
+            <div class="chat-typing" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="chat-msg agent">Navýšení limitu schvaluje risk oddělení na žádost bankéře klienta. Formulář žádosti najdete v systému pod RM-07. Chcete předat požadavek operátorovi?<span class="chat-cite">Zdroj: Směrnice RM-2023/11 · čl. 7</span></div>
+          </div>
+          <div class="mock-foot dark"><span>⌀ odpověď: <b>40 s</b></span><span><b>78 %</b> bez eskalace</span><span class="mf-ok">● data neopouští banku</span></div>
+        </div>
+        <p class="mock-caption reveal">Náhled konverzace s interním agentem (ilustrační data).</p>
+
         <h3>Výsledek</h3>
         <div class="study-stats">
-          <div class="study-stat"><b>78 %</b><span>dotazů vyřešeno bez operátora</span></div>
-          <div class="study-stat"><b>4,5 h → 40 s</b><span>medián doby odpovědi</span></div>
-          <div class="study-stat"><b>0</b><span>incidentů úniku dat</span></div>
+          <div class="study-stat reveal"><b>78 %</b><span>dotazů vyřešeno bez operátora</span></div>
+          <div class="study-stat reveal"><b>4,5 h → 40 s</b><span>medián doby odpovědi</span></div>
+          <div class="study-stat reveal"><b>0</b><span>incidentů úniku dat</span></div>
         </div>
 
-        <blockquote class="study-quote">
+        <blockquote class="study-quote reveal">
           <p>„První AI nasazení, které prošlo naším compliance na první pokus. Agent odpovídá rychleji než my — a vždycky s citací."</p>
           <footer>Tomáš Zbořil — VP pro engineering, Koruna Bank</footer>
         </blockquote>
@@ -140,43 +177,74 @@
 
       <!-- ===== VELOMO ===== -->
       <article class="study" id="velomo">
-        <div class="study-tags">
+        <div class="study-tags reveal">
           <span class="chip-gray">SaaS</span>
           <span class="chip-gray">Prediktivní middleware</span>
           <span class="chip-gray">Nasazení: 5 týdnů</span>
         </div>
-        <h2><i class="case-mark cm-3"></i>Velomo</h2>
-        <p class="lead">SaaS platforma pro správu vozových parků ztrácela zákazníky potichu: když klient přestal produkt používat, tým se to dozvěděl až z výpovědi. Customer success reagoval pozdě a plošně.</p>
+        <h2 class="reveal"><i class="case-mark cm-3"></i>Velomo</h2>
+        <p class="lead reveal">SaaS platforma pro správu vozových parků ztrácela zákazníky potichu: když klient přestal produkt používat, tým se to dozvěděl až z výpovědi. Customer success reagoval pozdě a plošně.</p>
 
         <h3>Výchozí stav</h3>
-        <ul>
+        <ul class="reveal">
           <li>Měsíční churn 4,1 % a rostl s velikostí zákaznické báze</li>
           <li>Signály odchodu ležely v telemetrii, kterou nikdo nevyhodnocoval</li>
           <li>Customer success obvolával zákazníky naslepo</li>
         </ul>
 
         <h3>Řešení</h3>
-        <p>Prediktivní AI middleware čte telemetrii produktu v reálném čase, skóruje riziko odchodu každého účtu a sám spouští odstupňované zásahy: od personalizovaného onboarding e-mailu po úkol pro account manažera s přesným popisem, co se u klienta děje.</p>
-        <ul>
+        <p class="reveal">Prediktivní AI middleware čte telemetrii produktu v reálném čase, skóruje riziko odchodu každého účtu a sám spouští odstupňované zásahy: od personalizovaného onboarding e-mailu po úkol pro account manažera s přesným popisem, co se u klienta děje.</p>
+        <ul class="reveal">
           <li>Napojení na produktovou telemetrii, CRM a e-mailing přes API</li>
           <li>Model rizika přetrénovávaný každý týden na čerstvých datech</li>
           <li>Zásahy eskalují podle skóre — automatika řeší lehké případy, lidé kritické</li>
         </ul>
 
+        <h3>Náhled řešení</h3>
+        <div class="mock reveal" data-mock="churn">
+          <div class="mock-bar" aria-hidden="true"><i></i><i></i><i></i><span>churn-radar — skóre rizika účtů</span><span class="mock-live">● live telemetrie</span></div>
+          <div class="mock-table">
+            <div class="mock-thead" aria-hidden="true"><span>Účet</span><span>Riziko odchodu</span><span></span><span>Trend užívání</span><span>Automatický zásah</span></div>
+            <div class="mock-acc">
+              <span class="acc-name">Fleetio Trans</span>
+              <i class="risk"><i class="low" style="--w:18%"></i></i>
+              <span class="risk-val">18</span>
+              <svg class="spark" viewBox="0 0 64 22" aria-hidden="true"><polyline points="0,16 10,14 20,15 30,10 40,11 50,7 64,6" stroke="#2fb977"/></svg>
+              <span class="acc-action">— stabilní, bez zásahu</span>
+            </div>
+            <div class="mock-acc">
+              <span class="acc-name">Logimax s.r.o.</span>
+              <i class="risk"><i class="mid" style="--w:54%"></i></i>
+              <span class="risk-val">54</span>
+              <svg class="spark" viewBox="0 0 64 22" aria-hidden="true"><polyline points="0,8 10,10 20,9 30,13 40,12 50,15 64,16" stroke="#f5a623"/></svg>
+              <span class="acc-action auto">→ onboarding e-mail odeslán</span>
+            </div>
+            <div class="mock-acc">
+              <span class="acc-name">TransCargo CZ</span>
+              <i class="risk"><i class="high" style="--w:87%"></i></i>
+              <span class="risk-val">87</span>
+              <svg class="spark" viewBox="0 0 64 22" aria-hidden="true"><polyline points="0,5 10,6 20,9 30,8 40,14 50,17 64,19" stroke="#e14b4b"/></svg>
+              <span class="acc-action crit">→ úkol pro account manažera</span>
+            </div>
+          </div>
+          <div class="mock-foot"><span>Předstih detekce: <b data-count="9">0</b> dní</span><span>Sledováno: <b data-count="412">0</b> účtů</span><span class="mf-ok">● model přetrénován před 2 dny</span></div>
+        </div>
+        <p class="mock-caption reveal">Náhled dashboardu rizika odchodu (ilustrační data).</p>
+
         <h3>Výsledek</h3>
         <div class="study-stats">
-          <div class="study-stat"><b>−31 %</b><span>odchodovost zákazníků za kvartál</span></div>
-          <div class="study-stat"><b>9 dní</b><span>průměrný předstih detekce rizika</span></div>
-          <div class="study-stat"><b>5×</b><span>vyšší zásah retenčních kampaní</span></div>
+          <div class="study-stat reveal"><b>−31 %</b><span>odchodovost zákazníků za kvartál</span></div>
+          <div class="study-stat reveal"><b>9 dní</b><span>průměrný předstih detekce rizika</span></div>
+          <div class="study-stat reveal"><b>5×</b><span>vyšší zásah retenčních kampaní</span></div>
         </div>
 
-        <blockquote class="study-quote">
+        <blockquote class="study-quote reveal">
           <p>„Dřív jsme o odcházejícím zákazníkovi věděli, až když poslal výpověď. Teď devět dní předem — a většinou ho udržíme."</p>
           <footer>Petra Dvořáková — ředitelka zákaznického úspěchu, Velomo</footer>
         </blockquote>
       </article>
 
-      <div class="studies-cta">
+      <div class="studies-cta reveal">
         <p>Chcete podobná čísla ve své firmě? Začíná to 30minutovým posouzením.</p>
         <a href="index.html#kontakt" class="btn btn-black">Rezervovat konzultaci</a>
       </div>
@@ -196,6 +264,7 @@
     </div>
   </footer>
 
-  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  <script src="lenis.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
