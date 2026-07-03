@@ -752,16 +752,3 @@ html.lenis, html.lenis body { height: auto; }
   .annot-human { right: 6%; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .reveal { opacity: 1; filter: none; transform: none; transition: none; }
-  .load { opacity: 1; filter: none; transform: none; animation: none; }
-  .wi { transform: none; opacity: 1; filter: none; transition: none; }
-  .tier-row { position: static; }
-  .big-quote blockquote .qw { opacity: 1; }
-  .reveal .annot-line, .reveal .annot-vline, .reveal .annot-hline { transform: none; transition: none; }
-  .reveal .annot-text, .reveal .annot .chip-black, .tier-annot .chip-black { opacity: 1; transition: none; }
-  .marquee-track, .orbit-ring, .orbit-node, .orbit-center { animation: none; }
-  .btn:hover, .btn:active, .tier-card:hover, .feature-cell:hover { transform: none; }
-  .faq-body { transition: none; }
-}
