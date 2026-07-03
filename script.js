@@ -277,15 +277,38 @@ document.querySelectorAll(".faq-item").forEach((item) => {
 });
 
 /* ---------- ASCII renderer ----------
-   Hustotní pole -> ASCII znaky. shapeFn(x, y, t) vrací 0..1. */
+   Hustotní pole -> ASCII znaky. shapeFn(x, y, t) vrací 0..1.
+   Kvůli výkonu se znaky kreslí z předrenderovaného atlasu (drawImage je
+   řádově levnější než fillText + změny fillStyle) a dekorativní animace
+   běží na ~30 fps — u pomalého vlnění je to nerozeznatelné. */
 const RAMP = " .·:;+*#@";
+const CHARS = RAMP.length - 1;
+const SHADES = 8;
+let glyphAtlas = null;
+function getGlyphAtlas(cell) {
+  if (glyphAtlas) return glyphAtlas;
+  const cv = document.createElement("canvas");
+  const cw = cell + 2, ch = Math.ceil(cell * 1.15) + 2;
+  cv.width = cw * CHARS;
+  cv.height = ch * SHADES;
+  const cx = cv.getContext("2d");
+  cx.font = `${cell + 1}px monospace`;
+  cx.textBaseline = "top";
+  for (let s = 0; s < SHADES; s++) {
+    const shade = 40 + Math.floor((1 - (s + 0.5) / SHADES) * 130);
+    cx.fillStyle = `rgb(${shade},${shade},${shade})`;
+    for (let i = 0; i < CHARS; i++) cx.fillText(RAMP[i + 1], i * cw + 1, s * ch + 1);
+  }
+  glyphAtlas = { cv, cw, ch };
+  return glyphAtlas;
+}
+
 function asciiRender(canvas, shapeFn, animate) {
   const ctx = canvas.getContext("2d");
   const W = canvas.width, H = canvas.height;
   const cell = 8;
   const cols = Math.floor(W / cell), rows = Math.floor(H / (cell * 1.15));
-  ctx.font = `${cell + 1}px monospace`;
-  ctx.textBaseline = "top";
+  const atlas = getGlyphAtlas(cell);
 
   function frame(t) {
     ctx.clearRect(0, 0, W, H);
@@ -295,17 +318,21 @@ function asciiRender(canvas, shapeFn, animate) {
         let v = shapeFn(x, y, t);
         if (v <= 0.04) continue;
         v = Math.min(1, v);
-        const ch = RAMP[Math.floor(v * (RAMP.length - 1))];
-        const shade = 40 + Math.floor((1 - v) * 130);
-        ctx.fillStyle = `rgb(${shade},${shade},${shade})`;
-        ctx.fillText(ch, c * cell, r * cell * 1.15);
+        const idx = Math.floor(v * CHARS);
+        if (idx < 1) continue;
+        const s = Math.min(SHADES - 1, Math.floor(v * SHADES));
+        ctx.drawImage(atlas.cv, (idx - 1) * atlas.cw, s * atlas.ch, atlas.cw, atlas.ch,
+          c * cell - 1, r * cell * 1.15 - 1, atlas.cw, atlas.ch);
       }
     }
   }
 
   if (animate && !reduceMotion) {
-    let raf;
-    const loop = (ms) => { frame(ms / 1000); raf = requestAnimationFrame(loop); };
+    let raf, last = 0;
+    const loop = (ms) => {
+      if (ms - last >= 31) { last = ms; frame(ms / 1000); }
+      raf = requestAnimationFrame(loop);
+    };
     // animuj jen když je canvas vidět
     const vis = new IntersectionObserver(([en]) => {
       if (en.isIntersecting) raf = requestAnimationFrame(loop);
@@ -465,24 +492,28 @@ document.querySelectorAll("canvas[data-icon]").forEach((cv) => {
   }
   order.forEach((pi, i) => { pixels[pi].ord = i / order.length; });
 
-  let buildStart = -1, hoverT = -1e9, raf = 0, running = false;
+  // glow se předrenderuje jednou do offscreen canvasu — blur filtr při
+  // každém snímku byl hlavní příčina trhání této sekce
+  const glow = document.createElement("canvas");
+  glow.width = cv.width;
+  glow.height = cv.height;
+  const gx = glow.getContext("2d");
+  gx.filter = "blur(14px)";
+  gx.fillStyle = icon.color;
+  for (const p of pixels) gx.fillRect(p.c * px, p.r * px, px, px);
+
+  let buildStart = -1, hoverT = -1e9, raf = 0, running = false, last = 0;
 
   function frame(now) {
+    if (now - last < 31) { raf = requestAnimationFrame(frame); return; } // ~30 fps
+    last = now;
     const t = now / 1000;
     if (buildStart < 0) buildStart = t;
     const bt = t - buildStart;
     ctx.clearRect(0, 0, cv.width, cv.height);
     // glow vrstva (dýchá)
-    ctx.save();
-    ctx.filter = "blur(14px)";
-    ctx.fillStyle = icon.color;
-    for (const p of pixels) {
-      const a = clamp01((bt - p.ord * 0.7) / 0.35);
-      if (a <= 0) continue;
-      ctx.globalAlpha = a * (0.7 + 0.3 * Math.sin(t * 1.8 + (p.r + p.c) * 0.5));
-      ctx.fillRect(p.c * px, p.r * px, px, px);
-    }
-    ctx.restore();
+    ctx.globalAlpha = clamp01(bt / 1.05) * (0.7 + 0.3 * Math.sin(t * 1.8));
+    ctx.drawImage(glow, 0, 0);
     // ostré pixely: nástup s dorůstáním, plynulé vlnění jasu, hover jiskra
     ctx.fillStyle = icon.color;
     const spark = clamp01(1 - (t - hoverT) / 0.6);

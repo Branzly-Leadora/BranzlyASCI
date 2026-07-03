@@ -280,6 +280,7 @@ h4 { font-size: 16px; font-weight: 500; }
   width: 160px; height: 160px;
   image-rendering: pixelated;
   animation: iconFloat 6s ease-in-out infinite;
+  will-change: transform;
 }
 @keyframes iconFloat { 50% { transform: translateY(-7px); } }
 .feature-cell:nth-child(2) .pixel-icon canvas { animation-delay: 1.5s; }
