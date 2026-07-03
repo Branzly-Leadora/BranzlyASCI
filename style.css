@@ -305,53 +305,98 @@ h4 { font-size: 16px; font-weight: 500; }
   border-radius: 18px;
 }
 
-/* ===== ECOSYSTEM ===== */
+/* ===== ECOSYSTEM — BEAM HUB ===== */
 .ecosystem { padding: clamp(56px, 8vw, 90px) 32px; text-align: center; }
-.orbit {
+.beamhub {
   position: relative;
-  width: min(420px, 80vw);
-  height: min(420px, 80vw);
-  margin: 40px auto 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(30px, 7vw, 90px);
+  max-width: 720px;
+  margin: 52px auto 0;
 }
-.orbit-ring { position: absolute; border: 1px dashed var(--line-strong); border-radius: 50%; }
-.orbit-ring.r1 { inset: 0; }
-.orbit-ring.r2 { inset: 22%; }
-.orbit-center {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 58px; height: 58px;
+.bh-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; overflow: visible; }
+.bh-path { fill: none; stroke: var(--line-strong); stroke-width: 1.2; }
+.bh-pulse {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-dasharray: 14 86;
+  stroke-dashoffset: 100;
+  filter: drop-shadow(0 0 3px rgba(52, 85, 250, 0.55));
+  animation: bhIn 3.4s linear infinite;
+}
+.bh-pulse.out { animation-name: bhOut; }
+@keyframes bhIn { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@keyframes bhOut { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 100; } }
+
+.bh-col { display: grid; gap: 30px; z-index: 1; }
+.bh-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s;
+}
+.bh-node:hover {
+  transform: translateY(-3px);
+  border-color: var(--gray-4);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+}
+.bh-node svg { width: 17px; height: 17px; flex: none; }
+.bh-node svg path { fill: var(--gray-2); transition: fill 0.3s; }
+.bh-node:hover svg path { fill: var(--blue); }
+
+.bh-center { display: grid; justify-items: center; gap: 16px; z-index: 1; }
+.bh-hub {
+  position: relative;
+  width: 86px;
+  height: 86px;
   background: #fff;
   border: 1px solid var(--line-strong);
   border-radius: 50%;
   display: grid;
   place-items: center;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 6px 26px rgba(0, 0, 0, 0.07);
+  animation: hubGlow 3.6s ease-in-out infinite;
 }
-.orbit-node {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  font-size: 12px;
-  background: #fff;
-  border: 1px solid var(--line-strong);
-  border-radius: 18px;
-  padding: 5px 13px;
-  color: var(--gray-1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  will-change: transform;
-  transform: translate(-50%, -50%);
+@keyframes hubGlow {
+  50% { box-shadow: 0 6px 34px rgba(52, 85, 250, 0.22); }
 }
-.orbit-comet {
+.bh-ring {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 6px;
-  height: 6px;
+  inset: -1px;
+  border: 1px solid rgba(52, 85, 250, 0.45);
   border-radius: 50%;
-  background: var(--blue);
-  box-shadow: 0 0 10px 2px rgba(52, 85, 250, 0.35);
-  will-change: transform;
+  animation: ringExpand 3.6s var(--ease) infinite;
+  pointer-events: none;
+}
+.bh-ring.r2 { animation-delay: 1.8s; }
+@keyframes ringExpand {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.65); opacity: 0; }
+}
+.bh-count {
+  font-size: 11px;
+  color: var(--gray-3);
+  display: grid;
+  gap: 2px;
+}
+.bh-count b {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===== PRICING ===== */
@@ -501,8 +546,52 @@ h4 { font-size: 16px; font-weight: 500; }
 .faq-body { padding: 0 20px 18px; }
 .faq-body p { color: var(--gray-2); font-size: 13px; }
 
-/* ===== CTA + KALENDÁŘ ===== */
-.cta { padding: clamp(56px, 8vw, 90px) 32px; }
+/* ===== CTA + KALENDÁŘ (tmavé finále) ===== */
+.cta {
+  position: relative;
+  padding: clamp(56px, 8vw, 90px) 32px;
+  background: #0e0e0e;
+}
+.cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1.5px);
+  background-size: 26px 26px;
+}
+.cta > * { position: relative; }
+.cta-text h3 { color: #fff; }
+.cta .faq-lead { color: #9a9a9a; }
+.cta-points li { color: #d6d6d6; }
+.cta-points li::before { border-color: #fff; }
+.cta .btn-black { background: #fff; color: #111; }
+.cta .btn-black:hover { background: #e9e9e9; }
+.cta .btn-black::after {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.10), transparent);
+}
+.cta-form label { color: #b5b5b5; }
+.cta-form input,
+.cta-form textarea {
+  background: #161616;
+  border-color: #2d2d2d;
+  color: #ececec;
+}
+.cta-form input::placeholder,
+.cta-form textarea::placeholder { color: #5f5f5f; }
+.cta-form input:focus,
+.cta-form textarea:focus {
+  background: #101010;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(52, 85, 250, 0.16);
+}
+.cta-form input[readonly] { color: #8f8f8f; }
+.cta-form .invalid { border-color: #e5544f; background: #251313; }
+.cta .form-consent { color: #6f6f6f; }
+.cta .form-consent a { color: #b5b5b5; }
+.cta .form-status.ok { color: #35c47d; }
+.cta .form-status.err { color: #e5645f; }
+.cta .calendar { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55); border: 1px solid #242424; }
 .cta-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -769,14 +858,91 @@ h4 { font-size: 16px; font-weight: 500; }
 .socials a:hover { transform: translateY(-2px); }
 .socials a { transition: color 0.2s, border-color 0.2s, transform 0.2s var(--ease); }
 
-/* ===== ORBIT ANIMACE ===== */
-/* uzly obíhají po drahách přes JS (orbitRaf); dráhy se navíc otáčejí */
-.orbit-ring { animation: spin 70s linear infinite; }
-.orbit-ring.r2 { animation-duration: 45s; animation-direction: reverse; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.orbit-center { animation: pulse 3.5s ease-in-out infinite; }
-@keyframes pulse {
-  50% { box-shadow: 0 4px 30px rgba(52, 85, 250, 0.18); }
+/* ===== SPOTLIGHT KARTY (radiální světlo pod kurzorem) ===== */
+.spot { position: relative; }
+.spot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(260px circle at var(--sx, 50%) var(--sy, 50%),
+    rgba(52, 85, 250, 0.075), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+  z-index: 1;
+}
+.spot:hover::after { opacity: 1; }
+
+/* ===== SHINE BORDER (běžící světelný okraj na Fázi 2) ===== */
+@property --bbang {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.tier-row-left .tier-card::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  pointer-events: none;
+  border: 1.5px solid transparent;
+  background: conic-gradient(from var(--bbang),
+    transparent 0deg 290deg,
+    rgba(52, 85, 250, 0.9) 330deg,
+    transparent 360deg) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: bbspin 5s linear infinite;
+}
+@keyframes bbspin { to { --bbang: 360deg; } }
+
+/* ===== HERO FX: particles, glow, zrno, shimmer ===== */
+.hero { position: relative; }
+.hero-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+.hero-visual::before {
+  content: "";
+  position: absolute;
+  inset: 6% 10%;
+  z-index: -1;
+  background:
+    radial-gradient(48% 58% at 33% 46%, rgba(52, 85, 250, 0.10), transparent 70%),
+    radial-gradient(44% 54% at 68% 40%, rgba(233, 53, 224, 0.06), transparent 70%);
+  filter: blur(22px);
+  pointer-events: none;
+}
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-repeat: repeat;
+}
+.btn-black { position: relative; overflow: hidden; }
+.btn-black::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -160%;
+  width: 55%;
+  height: 100%;
+  transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  animation: shimmer 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes shimmer {
+  0%, 55% { left: -160%; }
+  100% { left: 190%; }
 }
 
 /* ===== FAQ plynulé rozbalení ===== */
@@ -1146,6 +1312,11 @@ body.grid-on::after {
 .acc-action.auto { color: var(--blue); }
 .acc-action.crit { color: #c43c3c; }
 
+@media (max-width: 560px) {
+  .bh-node span { display: none; }
+  .bh-node { padding: 11px; }
+}
+
 @media (max-width: 700px) {
   .mock-row { grid-template-columns: 1fr auto; }
   .mr-id { display: none; }
@@ -1219,6 +1390,11 @@ html.lenis, html.lenis body { height: auto; }
   .intersection h3, .intersection .section-sub { padding: 0 20px; }
 
   .feature-grid { grid-template-columns: 1fr; }
+  .beamhub { gap: 20px; }
+  .bh-col { gap: 16px; }
+  .bh-node { padding: 9px 12px; font-size: 11.5px; gap: 8px; }
+  .bh-hub { width: 64px; height: 64px; }
+  .bh-hub svg { width: 20px; height: 20px; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .stat { padding: 32px 18px 28px; }
   .stat:nth-child(3) { border-left: 0; }

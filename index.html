@@ -59,6 +59,7 @@
 
     <!-- ===== HERO ===== -->
     <section class="hero">
+      <canvas class="hero-particles" id="heroParticles" aria-hidden="true"></canvas>
       <h1 class="load load-1">Zcela nová éra AI</h1>
       <p class="hero-sub load load-2">Stavíme vlastní AI agenty a bezpečné datové<br />pipeline, které odstraní vaše manuální procesy.</p>
       <div class="hero-cta load load-3">
@@ -163,22 +164,31 @@
       </div>
     </section>
 
-    <!-- ===== EKOSYSTÉM INTEGRACÍ ===== -->
+    <!-- ===== EKOSYSTÉM INTEGRACÍ (beam hub) ===== -->
     <section class="ecosystem">
       <h3 class="reveal">Ekosystém integrací</h3>
       <p class="section-sub reveal">Propojujeme nejlepší API v oboru<br />do jedné plynulé pipeline.</p>
-      <div class="orbit reveal" data-plx="-0.03" aria-hidden="true">
-        <div class="orbit-ring r1"></div>
-        <div class="orbit-ring r2"></div>
-        <div class="orbit-center"><svg viewBox="0 0 24 24" width="22" height="22"><rect x="3" y="3" width="8" height="18" rx="4" fill="#000"/><rect x="13" y="3" width="8" height="18" rx="4" fill="#000"/></svg></div>
-        <span class="orbit-node on1">Slack</span>
-        <span class="orbit-node on2">Notion</span>
-        <span class="orbit-node on3">HubSpot</span>
-        <span class="orbit-node on4">Stripe</span>
-        <span class="orbit-node on5">PostgreSQL</span>
-        <span class="orbit-node on6">Zendesk</span>
+      <div class="beamhub reveal" id="beamhub">
+        <svg class="bh-svg" id="bhSvg" aria-hidden="true"></svg>
+        <div class="bh-col bh-left">
+          <div class="bh-node" data-icon="slack" data-dir="in"><span>Slack</span></div>
+          <div class="bh-node" data-icon="notion" data-dir="in"><span>Notion</span></div>
+          <div class="bh-node" data-icon="hubspot" data-dir="in"><span>HubSpot</span></div>
+        </div>
+        <div class="bh-center">
+          <div class="bh-hub" id="bhHub">
+            <i class="bh-ring" aria-hidden="true"></i>
+            <i class="bh-ring r2" aria-hidden="true"></i>
+            <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect x="3" y="3" width="8" height="18" rx="4" fill="#000"/><rect x="13" y="3" width="8" height="18" rx="4" fill="#000"/></svg>
+          </div>
+          <p class="bh-count">Úloh zpracováno dnes<b id="orbitCount">1 200</b></p>
+        </div>
+        <div class="bh-col bh-right">
+          <div class="bh-node" data-icon="stripe" data-dir="out"><span>Stripe</span></div>
+          <div class="bh-node" data-icon="postgresql" data-dir="out"><span>PostgreSQL</span></div>
+          <div class="bh-node" data-icon="zendesk" data-dir="out"><span>Zendesk</span></div>
+        </div>
       </div>
-      <p class="orbit-counter reveal"><span class="chip-black">Úloh zpracováno dnes: <span id="orbitCount">1 200</span></span></p>
     </section>
 
     <!-- ===== PROCES ===== -->
