@@ -741,7 +741,7 @@ h4 { font-size: 17px; font-weight: 500; }
 .footer-cols { display: flex; gap: 56px; justify-content: flex-end; }
 .footer-col { display: flex; flex-direction: column; gap: 9px; }
 .footer-head { font-weight: 500; font-size: 13px; margin-bottom: 6px; }
-.footer-col a { font-size: 12.5px; color: var(--gray-2); transition: color 0.2s; }
+.footer-col a { font-size: 12.5px; color: var(--gray-2); transition: color 0.2s; white-space: nowrap; width: fit-content; }
 .footer-col a:hover { color: var(--ink); }
 
 /* ===== REVEAL (blur + fade, jako předloha) ===== */
@@ -942,8 +942,10 @@ h4 { font-size: 17px; font-weight: 500; }
 .faq-body {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.45s var(--ease);
+  opacity: 0;
+  transition: max-height 0.3s var(--ease), opacity 0.25s ease;
 }
+.faq-item[open] .faq-body { opacity: 1; }
 
 /* ===== NAV skrývání při scrollu ===== */
 .nav-wrap { transition: transform 0.4s var(--ease); }
@@ -1287,15 +1289,19 @@ body.grid-on::after {
 }
 .chat-typing {
   justify-self: start;
-  display: none;
+  display: inline-flex;
   gap: 4px;
   align-items: center;
   padding: 12px 13px;
   background: #1e1e1e;
   border-radius: 12px;
   border-bottom-left-radius: 3px;
+  /* drží místo v gridu i skryté → okno chatu neposkakuje */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s var(--ease);
 }
-.chat-typing.show { display: inline-flex; }
+.chat-typing.show { opacity: 1; visibility: visible; }
 .chat-typing i { width: 5px; height: 5px; border-radius: 50%; background: #777; animation: typeBlink 1s infinite; }
 .chat-typing i:nth-child(2) { animation-delay: 0.2s; }
 .chat-typing i:nth-child(3) { animation-delay: 0.4s; }
@@ -1335,6 +1341,9 @@ body.grid-on::after {
 .acc-action.auto { color: var(--blue); }
 .acc-action.crit { color: #c43c3c; }
 
+@media (max-width: 520px) {
+  .explore-grid { grid-template-columns: 1fr; }
+}
 @media (max-width: 560px) {
   .bh-node span { display: none; }
   .bh-node { padding: 11px; }
@@ -1521,8 +1530,9 @@ html.lenis, html.lenis body { height: auto; }
   .nav-simple .nav-left { justify-content: flex-start; padding-right: 0; }
   .nav-simple .nav-right { justify-content: flex-end; padding-left: 0; }
 
-  .hero, .features, .ecosystem, .pricing, .cases, .faq, .cta { padding-left: 20px; padding-right: 20px; }
+  .hero, .features, .ecosystem, .pricing, .cases, .faq, .cta, .explore { padding-left: 20px; padding-right: 20px; }
   .refs > h3, .refs > .section-sub { padding-left: 20px; padding-right: 20px; }
+  .explore-grid { grid-template-columns: 1fr 1fr; }
   .intersection h3, .intersection .section-sub { padding: 0 20px; }
 
   .feature-grid { grid-template-columns: 1fr; }
@@ -1659,6 +1669,66 @@ html.lenis, html.lenis body { height: auto; }
 .team-bio { color: var(--gray-2); font-size: 14px; }
 .team-side p { color: var(--gray-2); font-size: 14.5px; }
 .team-side .cta-points { margin-top: 20px; }
+
+/* ===== ROZCESTNÍK NA PODSTRÁNKY ===== */
+.explore { padding: clamp(88px, 11vw, 148px) 32px; }
+.explore-grid {
+  max-width: 1000px;
+  margin: 52px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.explore-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px dashed var(--line-strong);
+  background: var(--bg);
+  padding: 20px 20px 18px;
+  transition: border-color 0.25s var(--ease), transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
+}
+.explore-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(52, 85, 250, 0.08);
+}
+.explore-tag {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-3);
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  padding: 3px 8px;
+  margin-bottom: 14px;
+}
+.explore-card h4 { font-size: 16px; line-height: 1.25; }
+.explore-card p { color: var(--gray-2); font-size: 13px; margin-top: 7px; flex: 1; }
+.explore-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.explore-go i { font-style: normal; transition: transform 0.25s var(--ease); }
+.explore-card:hover .explore-go { color: var(--blue); }
+.explore-card:hover .explore-go i { transform: translateX(4px); }
+.explore-card-cta {
+  background: var(--ink);
+  border-style: solid;
+  border-color: var(--ink);
+}
+.explore-card-cta h4, .explore-card-cta .explore-go { color: #fff; }
+.explore-card-cta p { color: rgba(255, 255, 255, 0.7); }
+.explore-card-cta .explore-tag { color: #fff; background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.2); }
+.explore-card-cta:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: 0 16px 44px rgba(0, 0, 0, 0.28); }
+.explore-card-cta:hover .explore-go { color: #fff; }
 
 /* ===== LEAD MAGNET ===== */
 .magnet { padding: clamp(48px, 6vw, 72px) 32px; }

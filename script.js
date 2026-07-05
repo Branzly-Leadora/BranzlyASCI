@@ -441,7 +441,7 @@ if (finePointer && !reduceMotion) {
    jejich slova zůstala navždy schovaná pod maskou */
 const reveals = document.querySelectorAll(".reveal, main h3.split:not(.reveal)");
 // stagger: pořadí v rámci rodiče -> --i
-document.querySelectorAll(".feature-grid, .case-grid, .faq-list, .tag-strip, .stats-grid, .study-stats, .ref-grid, .mf-list").forEach((parent) => {
+document.querySelectorAll(".feature-grid, .case-grid, .faq-list, .tag-strip, .stats-grid, .study-stats, .ref-grid, .mf-list, .explore-grid").forEach((parent) => {
   [...parent.children].forEach((child, i) => child.style.setProperty("--i", i));
 });
 if ("IntersectionObserver" in window && !reduceMotion) {
@@ -462,8 +462,13 @@ document.querySelectorAll(".faq-item").forEach((item) => {
     e.preventDefault();
     if (item.open) {
       body.style.maxHeight = "0px";
-      if (reduceMotion) item.open = false;
-      else body.addEventListener("transitionend", () => { item.open = false; }, { once: true });
+      if (reduceMotion) { item.open = false; return; }
+      const done = (ev) => {
+        if (ev.propertyName !== "max-height") return;
+        body.removeEventListener("transitionend", done);
+        item.open = false;
+      };
+      body.addEventListener("transitionend", done);
     } else {
       item.open = true;
       requestAnimationFrame(() => { body.style.maxHeight = body.scrollHeight + "px"; });
