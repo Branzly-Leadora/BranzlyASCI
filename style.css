@@ -1483,10 +1483,6 @@ body.grid-on::after {
 }
 .ref figcaption { margin-top: 18px; font-size: 12px; color: var(--gray-3); }
 .ref figcaption b { display: block; font-weight: 500; font-size: 12.5px; color: var(--ink); }
-@media (prefers-reduced-motion: reduce) {
-  .ref-track { animation: none; }
-  .ref-row { overflow-x: auto; }
-}
 
 /* ===== SKUTEČNÉ PORTRÉTY ===== */
 img.avatar { object-fit: cover; filter: grayscale(1) contrast(1.05); transition: filter 0.4s var(--ease); }
@@ -1841,13 +1837,6 @@ html.lenis, html.lenis body { height: auto; }
 .blog-item .case-link { margin-top: 6px; }
 
 /* ===== OMEZENÍ POHYBU (systémová volba) ===== */
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track, .pixel-icon canvas, .annot-dot, .bh-pulse, .bh-ring, .bh-hub,
-  .btn-black::after, .scroll-cue, .tier-row-left .tier-card::before,
-  .mf-dot, .mr-prog i, .mock-live, .mf-ok, .foot-status i { animation: none !important; }
-  .load, .reveal { opacity: 1; filter: none; transform: none; animation: none; }
-  .wi { transform: none; opacity: 1; filter: none; transition: none; }
-  .big-quote blockquote .qw { opacity: 1; }
-  .btn::after { display: none; }
-  .btn:hover, .btn:active { transform: none; }
-}
+/* Poznámka: animace a efekty běží na přání na všech zařízeních bez ohledu
+   na systémové „omezit pohyb". Dřívější blok, který je zde při reduce-motion
+   vypínal, byl proto odstraněn. */

@@ -1,5 +1,9 @@
 // ===== Branzly landing — vizuály a efekty =====
-const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Animace a efekty běží záměrně na VŠECH zařízeních a prohlížečích,
+// nezávisle na systémovém nastavení „omezit pohyb". Kdyby bylo někdy
+// potřeba tuto volbu respektovat, stačí vrátit:
+//   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reduceMotion = false;
 
 /* ---------- Lenis smooth scroll (ScrollEase easing) ---------- */
 let lenis = null;
