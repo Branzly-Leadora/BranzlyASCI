@@ -234,19 +234,72 @@ if (!reduceMotion) {
   }
 }
 
-/* ---------- ceník: postupné navázání fází ----------
-   Když se stack objeví ve viewportu, fáze naběhnou v pořadí (1 → 2 → 3)
-   posunem ze své strany + dokreslením spojnic. Všechny pak zůstávají
+/* ---------- ceník: postupné navázání fází + prokreslovaná spojnice ----------
+   Fáze naběhnou v pořadí (1 → 2 → 3) posunem ze své strany a mezi kartami se
+   prokreslí SVG spojnice s uzly, která fázi napojuje na fázi. Vše pak zůstává
    trvale vidět — žádné mlžení ani překrývání za scrollu. */
 const tierStack = document.querySelector(".tier-stack");
 if (tierStack) {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("class", "tier-link");
+  svg.setAttribute("aria-hidden", "true");
+  const linkPath = document.createElementNS(NS, "path");
+  linkPath.setAttribute("class", "tier-link-path");
+  svg.appendChild(linkPath);
+  const dots = [];
+  for (let i = 0; i < 4; i++) {
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("class", "tier-link-dot");
+    c.setAttribute("r", "3.5");
+    c.style.transitionDelay = (0.85 + i * 0.14) + "s";
+    svg.appendChild(c);
+    dots.push(c);
+  }
+  // append (ne prepend), aby SVG nerozhodilo nth-child pořadí fází;
+  // vrstvení řeší z-index (spojnice pod kartami)
+  tierStack.appendChild(svg);
+
+  const buildLink = () => {
+    const cards = [...tierStack.querySelectorAll(".tier-card")];
+    if (cards.length < 3) return;
+    const sr = tierStack.getBoundingClientRect();
+    svg.setAttribute("width", sr.width);
+    svg.setAttribute("height", sr.height);
+    const P = cards.map((c) => {
+      const r = c.getBoundingClientRect();
+      return { x: r.left + r.width / 2 - sr.left, top: r.top - sr.top, bot: r.bottom - sr.top };
+    });
+    const seg = (a, b) => {
+      const dy = (b.top - a.bot) * 0.55;
+      return `M ${a.x} ${a.bot} C ${a.x} ${a.bot + dy} ${b.x} ${b.top - dy} ${b.x} ${b.top}`;
+    };
+    linkPath.setAttribute("d", `${seg(P[0], P[1])} ${seg(P[1], P[2])}`);
+    const ends = [[P[0].x, P[0].bot], [P[1].x, P[1].top], [P[1].x, P[1].bot], [P[2].x, P[2].top]];
+    dots.forEach((d, i) => { d.setAttribute("cx", ends[i][0]); d.setAttribute("cy", ends[i][1]); });
+    const len = linkPath.getTotalLength();
+    linkPath.style.strokeDasharray = len;
+    linkPath.style.strokeDashoffset = tierStack.classList.contains("in") ? "0" : len;
+  };
+
+  const revealTier = () => {
+    buildLink();
+    tierStack.classList.add("in");
+    requestAnimationFrame(() => { linkPath.style.strokeDashoffset = "0"; });
+  };
+
+  buildLink();
+  addEventListener("load", buildLink);
+  addEventListener("resize", buildLink);
+
   if (reduceMotion) {
     tierStack.classList.add("in");
+    linkPath.style.strokeDashoffset = "0";
   } else {
     new IntersectionObserver(([en], io) => {
       if (!en.isIntersecting) return;
       io.disconnect();
-      tierStack.classList.add("in");
+      revealTier();
     }, { threshold: 0.2, rootMargin: "0px 0px -8% 0px" }).observe(tierStack);
   }
 }

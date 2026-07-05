@@ -811,6 +811,27 @@ h4 { font-size: 17px; font-weight: 500; }
 .tier-stack.in .tier-row:nth-child(2) { transition-delay: 0.16s; }
 .tier-stack.in .tier-row:nth-child(3) { transition-delay: 0.32s; }
 
+/* animovaná spojnice fází (prokreslí se mezi kartami, uzly naskočí) */
+.tier-stack { position: relative; }
+.tier-row { z-index: 1; }
+.tier-link { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: visible; }
+.tier-link-path {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.5;
+  filter: drop-shadow(0 0 5px rgba(52, 85, 250, 0.4));
+  transition: stroke-dashoffset 1.5s var(--ease) 0.2s;
+}
+.tier-link-dot {
+  fill: var(--blue);
+  opacity: 0;
+  filter: drop-shadow(0 0 4px rgba(52, 85, 250, 0.6));
+  transition: opacity 0.5s var(--ease);
+}
+.tier-stack.in .tier-link-dot { opacity: 0.9; }
+
 /* ===== SCROLL-LINKED CITACE ===== */
 .big-quote blockquote .qw { opacity: 0.14; }
 
