@@ -1360,9 +1360,6 @@ body.grid-on::after {
 .acc-action.auto { color: var(--blue); }
 .acc-action.crit { color: #c43c3c; }
 
-@media (max-width: 520px) {
-  .explore-grid { grid-template-columns: 1fr; }
-}
 @media (max-width: 560px) {
   .bh-node span { display: none; }
   .bh-node { padding: 11px; }
@@ -1551,7 +1548,6 @@ html.lenis, html.lenis body { height: auto; }
 
   .hero, .features, .ecosystem, .pricing, .cases, .faq, .cta, .explore { padding-left: 20px; padding-right: 20px; }
   .refs > h3, .refs > .section-sub { padding-left: 20px; padding-right: 20px; }
-  .explore-grid { grid-template-columns: 1fr 1fr; }
   .intersection h3, .intersection .section-sub { padding: 0 20px; }
 
   .feature-grid { grid-template-columns: 1fr; }
@@ -1695,7 +1691,9 @@ html.lenis, html.lenis body { height: auto; }
   max-width: 1000px;
   margin: 52px auto 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* auto-fill se přizpůsobí šířce sám (4 → 2 → 1 sloupec) bez závislosti
+     na pořadí media queries; min(100%, 220px) zamezí přetečení na úzkém mobilu */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   gap: 14px;
 }
 .explore-card {
