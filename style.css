@@ -798,16 +798,18 @@ h4 { font-size: 17px; font-weight: 500; }
 .split.in .wi { transform: none; opacity: 1; filter: none; }
 
 /* ===== STACKING KARTY (ceník) ===== */
-.tier-stack { --stack-top: clamp(76px, 13vh, 130px); }
+/* ceník — postupné navázání fází: každá fáze vjede ze své strany a zůstane
+   trvale vidět (žádné sticky překrývání ani mlžení za scrollu) */
 .tier-row {
-  position: sticky;
-  top: var(--stack-top);
-  transform-origin: top center;
-  will-change: transform, filter, opacity;
+  opacity: 0;
+  transition: opacity 0.75s var(--ease), transform 0.9s var(--ease);
 }
-.tier-row:nth-child(1) { z-index: 1; }
-.tier-row:nth-child(2) { z-index: 2; }
-.tier-row:nth-child(3) { z-index: 3; }
+.tier-row-right  { transform: translateX(46px) scale(0.98); }
+.tier-row-left   { transform: translateX(-46px) scale(0.98); }
+.tier-row-center { transform: translateY(34px) scale(0.98); }
+.tier-stack.in .tier-row { opacity: 1; transform: none; }
+.tier-stack.in .tier-row:nth-child(2) { transition-delay: 0.16s; }
+.tier-stack.in .tier-row:nth-child(3) { transition-delay: 0.32s; }
 
 /* ===== SCROLL-LINKED CITACE ===== */
 .big-quote blockquote .qw { opacity: 0.14; }
@@ -828,25 +830,32 @@ h4 { font-size: 17px; font-weight: 500; }
 }
 
 /* ===== KRESLÍCÍ SE ANOTAČNÍ LINKY ===== */
+/* hero „průsečík" anotace (zůstávají navázané na .reveal) */
 .reveal .annot-line, .reveal .annot-vline {
   transform: scaleY(0);
   transform-origin: top;
   transition: transform 0.8s var(--ease) 0.45s;
 }
-.reveal .annot-hline {
-  transform: scaleX(0);
-  transition: transform 0.8s var(--ease) 0.45s;
-}
-.tier-row-right .annot-hline { transform-origin: left; }
-.tier-row-left .annot-hline { transform-origin: right; }
-.tier-row-center .annot-hline { transform-origin: left; }
-.reveal .annot-text, .reveal .annot .chip-black, .tier-annot .chip-black {
+.reveal .annot-text, .reveal .annot .chip-black {
   opacity: 0;
   transition: opacity 0.5s var(--ease) 1s;
 }
 .reveal.in .annot-line, .reveal.in .annot-vline { transform: scaleY(1); }
-.reveal.in .annot-hline { transform: scaleX(1); }
-.reveal.in .annot-text, .reveal.in .annot .chip-black, .reveal.in .tier-annot .chip-black { opacity: 1; }
+.reveal.in .annot-text, .reveal.in .annot .chip-black { opacity: 1; }
+
+/* ceník — spojnice fází se dokreslí a štítek naskočí až po vjezdu karty,
+   fáze po fázi (1 → 2 → 3) */
+.tier-row .annot-hline { transform: scaleX(0); transition: transform 0.7s var(--ease); }
+.tier-row-right .annot-hline { transform-origin: left; }
+.tier-row-left .annot-hline { transform-origin: right; }
+.tier-row-center .annot-hline { transform-origin: left; }
+.tier-annot .chip-black { opacity: 0; transition: opacity 0.5s var(--ease); }
+.tier-stack.in .tier-row .annot-hline { transform: scaleX(1); transition-delay: 0.4s; }
+.tier-stack.in .tier-row .tier-annot .chip-black { opacity: 1; transition-delay: 0.55s; }
+.tier-stack.in .tier-row:nth-child(2) .annot-hline { transition-delay: 0.56s; }
+.tier-stack.in .tier-row:nth-child(2) .tier-annot .chip-black { transition-delay: 0.71s; }
+.tier-stack.in .tier-row:nth-child(3) .annot-hline { transition-delay: 0.72s; }
+.tier-stack.in .tier-row:nth-child(3) .tier-annot .chip-black { transition-delay: 0.87s; }
 
 /* ===== HOVER MIKRO-ANIMACE ===== */
 .tier-card, .case, .faq-item {
@@ -1559,6 +1568,9 @@ html.lenis, html.lenis body { height: auto; }
   .stat:nth-child(n+3) { border-top: 1px dashed var(--line-strong); }
   .timeline { gap: 32px; }
   .tier-row { padding: 0 !important; justify-content: center !important; }
+  /* na mobilu jednotný svislý náběh (vodorovný posun by přetékal) */
+  .tier-row-right, .tier-row-left, .tier-row-center { transform: translateY(30px) scale(0.985); }
+  .tier-stack.in .tier-row { transform: none; }
   .tier-annot { display: none; }
   .tier-card { grid-template-columns: 1fr; }
   .case-grid { grid-template-columns: 1fr; }

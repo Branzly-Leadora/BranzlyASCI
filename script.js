@@ -77,7 +77,6 @@ function mainRaf(time) {
         el.style.transform = `translateY(${off.toFixed(1)}px)`;
       }
     }
-    stackRaf();
     marqueeRaf(dt);
     particlesRaf(dt);
     cursorRaf();
@@ -235,27 +234,20 @@ if (!reduceMotion) {
   }
 }
 
-/* ---------- stacking karty ceníku (StackGrid efekt) ---------- */
-const tierRows = [...document.querySelectorAll(".tier-row")];
-function stackRaf() {
-  if (!tierRows.length) return;
-  const stackRect = tierRows[0].parentElement.getBoundingClientRect();
-  if (stackRect.bottom < 0 || stackRect.top > innerHeight) return;
-  for (let i = 0; i < tierRows.length - 1; i++) {
-    const cur = tierRows[i].getBoundingClientRect();
-    const next = tierRows[i + 1].getBoundingClientRect();
-    // p: 0 = další karta dole mimo, 1 = další karta překryla aktuální
-    const p = clamp01((innerHeight - next.top) / Math.max(innerHeight - cur.top - 30, 1));
-    const row = tierRows[i];
-    if (p > 0.001) {
-      // vypnout reveal transition, jinak by scroll-driven transform "plaval"
-      row.style.transition = "none";
-      row.style.transform = `scale(${(1 - 0.06 * p).toFixed(4)})`;
-      row.style.filter = `blur(${(3 * p).toFixed(2)}px)`;
-      row.style.opacity = (1 - 0.35 * p).toFixed(3);
-    } else {
-      row.style.transition = row.style.transform = row.style.filter = row.style.opacity = "";
-    }
+/* ---------- ceník: postupné navázání fází ----------
+   Když se stack objeví ve viewportu, fáze naběhnou v pořadí (1 → 2 → 3)
+   posunem ze své strany + dokreslením spojnic. Všechny pak zůstávají
+   trvale vidět — žádné mlžení ani překrývání za scrollu. */
+const tierStack = document.querySelector(".tier-stack");
+if (tierStack) {
+  if (reduceMotion) {
+    tierStack.classList.add("in");
+  } else {
+    new IntersectionObserver(([en], io) => {
+      if (!en.isIntersecting) return;
+      io.disconnect();
+      tierStack.classList.add("in");
+    }, { threshold: 0.2, rootMargin: "0px 0px -8% 0px" }).observe(tierStack);
   }
 }
 
@@ -1127,9 +1119,7 @@ document.querySelectorAll(".ref").forEach((card) => {
   });
 });
 
-/* ---------- GSAP ScrollTrigger: scrub animace ----------
-   stackRaf (ceník) zůstává ruční — je propletený s .reveal transformacemi
-   a funguje; migrace by přinesla jen riziko regresí */
+/* ---------- GSAP ScrollTrigger: scrub animace ---------- */
 const hasGsap = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
 if (hasGsap && !reduceMotion) {
   gsap.registerPlugin(ScrollTrigger);
