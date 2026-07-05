@@ -423,18 +423,7 @@ document.querySelectorAll('[data-mock="chat"]').forEach((mock) => {
   }, { threshold: 0.35 }).observe(mock);
 });
 
-/* ---------- magnetická tlačítka ---------- */
-if (finePointer && !reduceMotion) {
-  document.querySelectorAll(".btn").forEach((btn) => {
-    btn.addEventListener("mousemove", (e) => {
-      const r = btn.getBoundingClientRect();
-      const dx = e.clientX - r.left - r.width / 2;
-      const dy = e.clientY - r.top - r.height / 2;
-      btn.style.transform = `translate(${(dx * 0.22).toFixed(1)}px, ${(dy * 0.32).toFixed(1)}px)`;
-    });
-    btn.addEventListener("mouseleave", () => { btn.style.transform = ""; });
-  });
-}
+/* ---------- tlačítka: efekt odlesku (shine sweep) je čistě v CSS, .btn::after ---------- */
 
 /* ---------- blur+fade reveal (se staggerem mezi sourozenci) ---------- */
 /* sledují se i .split nadpisy bez vlastního .reveal (FAQ, CTA) — jinak by

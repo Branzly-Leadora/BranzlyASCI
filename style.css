@@ -68,6 +68,9 @@ h4 { font-size: 17px; font-weight: 500; }
 
 /* ===== BUTTONS (pill 18px) ===== */
 .btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -78,17 +81,33 @@ h4 { font-size: 17px; font-weight: 500; }
   border-radius: 22px;
   border: 0;
   cursor: pointer;
-  transition: transform 0.15s var(--ease), background 0.2s, opacity 0.2s;
+  transition: transform 0.22s var(--ease), background 0.2s, opacity 0.2s, box-shadow 0.28s var(--ease);
   white-space: nowrap;
 }
-.btn:hover { transform: translateY(-1px); }
-.btn:active { transform: translateY(0) scale(0.98); }
+/* přejezd světelného odlesku přes tlačítko při hoveru (nahrazuje magnetický efekt) */
+.btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -85%;
+  width: 55%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.42) 50%, transparent 100%);
+  transform: skewX(-22deg);
+  pointer-events: none;
+  transition: left 0.6s var(--ease);
+}
+.btn:hover::after { left: 145%; }
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(0.97); transition-duration: 0.08s; }
 .btn-black { background: var(--ink); color: #fff; }
-.btn-black:hover { background: #222; }
+.btn-black:hover { background: #1a1a1a; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26); }
 .btn-gray { background: rgba(0, 0, 0, 0.05); color: var(--ink); }
-.btn-gray:hover { background: rgba(0, 0, 0, 0.09); }
+.btn-gray:hover { background: rgba(0, 0, 0, 0.09); box-shadow: 0 8px 18px rgba(0, 0, 0, 0.10); }
+.btn-gray::after { background: linear-gradient(120deg, transparent 0%, rgba(0, 0, 0, 0.06) 50%, transparent 100%); }
 .btn-blue { background: var(--blue); color: #fff; }
-.btn-blue:hover { background: var(--blue-dark); }
+.btn-blue:hover { background: var(--blue-dark); box-shadow: 0 10px 26px rgba(52, 85, 250, 0.38); }
 
 /* ===== CHIPS & ANNOTATIONS ===== */
 .chip-black {
@@ -1830,4 +1849,6 @@ html.lenis, html.lenis body { height: auto; }
   .load, .reveal { opacity: 1; filter: none; transform: none; animation: none; }
   .wi { transform: none; opacity: 1; filter: none; transition: none; }
   .big-quote blockquote .qw { opacity: 1; }
+  .btn::after { display: none; }
+  .btn:hover, .btn:active { transform: none; }
 }
